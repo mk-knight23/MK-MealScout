@@ -156,7 +156,7 @@ function onResetStats() {
 
           <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
             <p class="text-center text-sm text-slate-500 dark:text-slate-400">
-              CulinaraAI v1.0.0 • Built with Vue 3 + Pinia
+              MK MealScoutAI v1.0.0 • Built with Vue 3 + Pinia
             </p>
           </div>
         </div>

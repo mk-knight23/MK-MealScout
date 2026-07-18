@@ -11,7 +11,7 @@ Object.defineProperty(globalThis, 'fetch', {
   writable: true,
 })
 
-describe('Culinara Recipe Finder', () => {
+describe('MK MealScout Recipe Finder', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
@@ -25,7 +25,7 @@ describe('Culinara Recipe Finder', () => {
   it('renders header with correct elements', () => {
     render(App)
     expect(screen.getByRole('banner')).toBeInTheDocument()
-    expect(screen.getAllByText(/Culinara/i)).toBeTruthy()
+    expect(screen.getAllByText(/MK MealScout/i)).toBeTruthy()
     expect(screen.getByRole('button', { name: /Open settings/i })).toBeInTheDocument()
   })
 
@@ -43,7 +43,7 @@ describe('Culinara Recipe Finder', () => {
 
   it('has proper ARIA labels for accessibility', () => {
     render(App)
-    expect(screen.getByRole('application', { name: /Culinara Recipe Finder/i })).toBeInTheDocument()
+    expect(screen.getByRole('application', { name: /MK MealScout Recipe Finder/i })).toBeInTheDocument()
     expect(screen.getByRole('main')).toBeInTheDocument()
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })

@@ -96,7 +96,7 @@ const onSearch = () => {
     class="min-h-screen transition-colors duration-500"
     :class="{ dark: settingsStore.isDarkMode, light: !settingsStore.isDarkMode }"
     role="application"
-    aria-label="Culinara Recipe Finder"
+    aria-label="MK MealScout Recipe Finder"
   >
     <!-- Header -->
     <header
@@ -112,7 +112,7 @@ const onSearch = () => {
             <ChefHat class="text-white" :size="24" />
           </div>
           <h1 class="text-2xl font-display font-black tracking-tighter dark:text-white">
-            Culinara<span class="text-culinary-primary">AI</span>
+            MK MealScout<span class="text-culinary-primary">AI</span>
           </h1>
         </div>
 
@@ -310,7 +310,7 @@ const onSearch = () => {
         <div class="space-y-6">
           <div class="flex items-center space-x-2">
             <ChefHat class="text-culinary-primary" :size="20" />
-            <span class="font-display font-bold text-xl tracking-tighter">Culinara</span>
+            <span class="font-display font-bold text-xl tracking-tighter">MK MealScout</span>
           </div>
           <p class="text-slate-500 text-sm leading-relaxed">
             The ultimate workspace for culinary exploration and digital meal planning.
@@ -367,7 +367,7 @@ const onSearch = () => {
         class="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6"
       >
         <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-          © 2026 Culinara by Musharraf Kazi
+          © 2026 MK MealScout by Qazi Musharof
         </p>
         <div class="flex gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
           <a href="https://github.com/mk-knight23/17-web-culinary-discovery" target="_blank" rel="noopener noreferrer" class="hover:text-culinary-primary transition-colors">GitHub</a>
