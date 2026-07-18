@@ -367,12 +367,12 @@ const onSearch = () => {
         class="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6"
       >
         <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-          © 2026 Culinara Labs. Built with Vue 3 & Pinia.
+          © 2026 Culinara by Musharraf Kazi
         </p>
         <div class="flex gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
-          <a href="#" class="hover:text-culinary-primary transition-colors">API Status</a>
-          <a href="#" class="hover:text-culinary-primary transition-colors">Privacy</a>
-          <a href="#" class="hover:text-culinary-primary transition-colors">Terms</a>
+          <a href="https://github.com/mk-knight23/17-web-culinary-discovery" target="_blank" rel="noopener noreferrer" class="hover:text-culinary-primary transition-colors">GitHub</a>
+          <span>No data collected</span>
+          <span>Free &amp; open-source</span>
         </div>
       </div>
     </footer>
