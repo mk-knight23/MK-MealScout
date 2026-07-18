@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: 17-web-culinary-discovery
-    env: static
-    buildCommand: npm run build
-    publishPath: dist
-    envVars:
-      - key: NODE_VERSION
-        value: 22
