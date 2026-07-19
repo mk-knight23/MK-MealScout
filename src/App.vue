@@ -111,8 +111,8 @@ const onSearch = () => {
           >
             <ChefHat class="text-white" :size="24" />
           </div>
-          <h1 class="text-2xl font-display font-black tracking-tighter dark:text-white">
-            MK MealScout<span class="text-culinary-primary">AI</span>
+          <h1 class="text-2xl font-display font-black tracking-tighter uppercase dark:text-white">
+            MK_<span class="text-culinary-primary">MealScout</span>
           </h1>
         </div>
 
@@ -367,7 +367,7 @@ const onSearch = () => {
         class="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6"
       >
         <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-          © 2026 MK MealScout by Qazi Musharof
+          © 2026 <a href="https://www.mkazi.live" target="_blank" rel="noopener noreferrer" class="hover:text-culinary-primary transition-colors underline">Qazi Musharof — Kazi Developer</a>. All rights reserved.
         </p>
         <div class="flex gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
           <a href="https://github.com/mk-knight23/17-web-culinary-discovery" target="_blank" rel="noopener noreferrer" class="hover:text-culinary-primary transition-colors">GitHub</a>
