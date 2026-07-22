@@ -7,7 +7,7 @@ export interface Recipe {
   strMealThumb: string
   strTags?: string
   strYoutube?: string
-  [key: string]: any
+  [key: string]: string | null | undefined
 }
 
 export interface Category {

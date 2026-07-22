@@ -70,25 +70,40 @@ const importBackup = async (event: Event) => {
     aria-label="Your data at a glance"
   >
     <dl class="flex flex-wrap items-center gap-x-8 gap-y-2">
-      <div v-for="stat in stats" :key="stat.label" class="flex items-center gap-2">
-        <component :is="stat.icon" :size="16" class="text-culinary-primary" aria-hidden="true" />
-        <dd class="text-lg font-display font-black">{{ stat.value }}</dd>
+      <div
+        v-for="stat in stats"
+        :key="stat.label"
+        class="flex items-center gap-2"
+      >
+        <component
+          :is="stat.icon"
+          :size="16"
+          class="text-culinary-primary"
+          aria-hidden="true"
+        />
+        <dd class="text-lg font-display font-black">
+          {{ stat.value }}
+        </dd>
         <dt class="text-[10px] font-black uppercase tracking-widest text-slate-400">
           {{ stat.label }}
         </dt>
       </div>
     </dl>
 
-    <div class="flex items-center gap-2" role="group" aria-label="Backup and restore">
+    <div
+      class="flex items-center gap-2"
+      role="group"
+      aria-label="Backup and restore"
+    >
       <button
-        @click="exportBackup"
         class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary transition-all"
+        @click="exportBackup"
       >
         <Download :size="14" /> Backup
       </button>
       <button
-        @click="openImportPicker"
         class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary transition-all"
+        @click="openImportPicker"
       >
         <Upload :size="14" /> Restore
       </button>
@@ -99,7 +114,7 @@ const importBackup = async (event: Event) => {
         class="hidden"
         aria-label="Choose a MealScout backup file"
         @change="importBackup"
-      />
+      >
     </div>
 
     <p

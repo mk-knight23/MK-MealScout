@@ -1,5 +1,5 @@
 declare global {
-  var fetch: any
+  var fetch: typeof globalThis.fetch
   var localStorage: Storage
 }
 
