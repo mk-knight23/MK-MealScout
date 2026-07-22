@@ -50,12 +50,21 @@ function parseFractionToken(token: string): number | null {
   return num / den
 }
 
+/** Split tokens like "400g" or "250ml" into quantity + known unit. */
+function splitQuantityUnitToken(token: string): string[] {
+  const m = token.match(/^(\d+(?:\.\d+)?)([a-zA-Z]+)$/)
+  if (m && m[1] !== undefined && m[2] !== undefined && KNOWN_UNITS.has(m[2].toLowerCase())) {
+    return [m[1], m[2]]
+  }
+  return [token]
+}
+
 export function parseMeasure(raw: string): ParsedMeasure {
   const original = raw
   const cleaned = normalizeFractions(raw).replace(/[,]/g, ' ').trim()
   if (!cleaned) return { raw: original, quantity: null, unit: '', suffix: '' }
 
-  const tokens = cleaned.split(/\s+/)
+  const tokens = cleaned.split(/\s+/).flatMap(splitQuantityUnitToken)
   let quantity: number | null = null
   let idx = 0
 

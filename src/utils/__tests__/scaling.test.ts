@@ -134,3 +134,20 @@ describe('conversions', () => {
     expect(convertMass(1, 'g', 'foo')).toBeNull()
   })
 })
+
+describe('attached-unit measures (e.g. "400g")', () => {
+  it('splits a known unit glued to the quantity', () => {
+    expect(parseMeasure('400g')).toMatchObject({ quantity: 400, unit: 'g' })
+    expect(parseMeasure('250ml')).toMatchObject({ quantity: 250, unit: 'ml' })
+    expect(parseMeasure('1cup Water')).toMatchObject({ quantity: 1, unit: 'cup', suffix: 'Water' })
+  })
+
+  it('keeps the unit when scaling attached-unit measures', () => {
+    expect(scaleMeasure('400g', 2).scaled).toBe('800 g')
+    expect(scaleMeasure('400g', 1).scaled).toBe('400 g')
+  })
+
+  it('does not split tokens whose letters are not a known unit', () => {
+    expect(parseMeasure('1 can 7up')).toMatchObject({ quantity: 1, unit: 'can', suffix: '7up' })
+  })
+})
