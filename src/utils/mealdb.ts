@@ -27,7 +27,10 @@ async function fetchJson<T>(path: string, opts: FetchOpts = {}): Promise<T> {
   const combined = signals.length > 1 ? mergeSignals(signals) : signals[0]
 
   try {
-    const res = await fetch(`${API_BASE}${path}`, { signal: combined, headers: { Accept: 'application/json' } })
+    const res = await fetch(`${API_BASE}${path}`, {
+      signal: combined,
+      headers: { Accept: 'application/json' },
+    })
     if (!res.ok) throw new MealDbError(`upstream_${res.status}`, { status: res.status })
     return (await res.json()) as T
   } catch (err) {
@@ -62,9 +65,20 @@ interface CategoriesResponse {
   meals: { strCategory: string }[] | null
 }
 
+interface IngredientsResponse {
+  meals: { idIngredient: string; strIngredient: string }[] | null
+}
+
 export async function listCategories(opts?: FetchOpts): Promise<string[]> {
   const data = await fetchJson<CategoriesResponse>('/list.php?c=list', opts)
-  return (data.meals ?? []).map(c => c.strCategory)
+  return (data.meals ?? []).map((c) => c.strCategory)
+}
+
+export async function listIngredients(opts?: FetchOpts): Promise<string[]> {
+  const data = await fetchJson<IngredientsResponse>('/list.php?i=list', opts)
+  return (data.meals ?? [])
+    .map((i) => (i.strIngredient ?? '').trim())
+    .filter((name) => name.length > 0)
 }
 
 export async function searchRecipes(query: string, opts?: FetchOpts): Promise<Recipe[]> {
@@ -79,7 +93,10 @@ export async function filterByCategory(category: string, opts?: FetchOpts): Prom
 }
 
 export async function filterByIngredient(ingredient: string, opts?: FetchOpts): Promise<Recipe[]> {
-  const data = await fetchJson<MealsResponse>(`/filter.php?i=${encodeURIComponent(ingredient)}`, opts)
+  const data = await fetchJson<MealsResponse>(
+    `/filter.php?i=${encodeURIComponent(ingredient)}`,
+    opts
+  )
   return data.meals ?? []
 }
 
