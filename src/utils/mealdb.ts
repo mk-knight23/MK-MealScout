@@ -62,9 +62,20 @@ interface CategoriesResponse {
   meals: { strCategory: string }[] | null
 }
 
+interface IngredientsResponse {
+  meals: { idIngredient: string; strIngredient: string }[] | null
+}
+
 export async function listCategories(opts?: FetchOpts): Promise<string[]> {
   const data = await fetchJson<CategoriesResponse>('/list.php?c=list', opts)
   return (data.meals ?? []).map(c => c.strCategory)
+}
+
+export async function listIngredients(opts?: FetchOpts): Promise<string[]> {
+  const data = await fetchJson<IngredientsResponse>('/list.php?i=list', opts)
+  return (data.meals ?? [])
+    .map(i => (i.strIngredient ?? '').trim())
+    .filter(name => name.length > 0)
 }
 
 export async function searchRecipes(query: string, opts?: FetchOpts): Promise<Recipe[]> {
