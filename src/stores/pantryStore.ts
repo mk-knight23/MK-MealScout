@@ -45,11 +45,11 @@ export const usePantryStore = defineStore('pantry', {
   }),
 
   getters: {
-    count: state => state.entries.length,
-    expiringSoon: state => state.entries.filter(e => isExpiringSoon(e.expiresAt)),
+    count: (state) => state.entries.length,
+    expiringSoon: (state) => state.entries.filter((e) => isExpiringSoon(e.expiresAt)),
     presets: (): PantryPreset[] => PANTRY_PRESETS,
-    hasIngredient: state => {
-      const names = new Set(state.entries.map(e => e.name.toLowerCase()))
+    hasIngredient: (state) => {
+      const names = new Set(state.entries.map((e) => e.name.toLowerCase()))
       return (name: string) => names.has(name.trim().toLowerCase())
     },
   },
@@ -75,15 +75,20 @@ export const usePantryStore = defineStore('pantry', {
       return entry
     },
 
-    updateEntry(id: string, patch: Partial<Pick<PantryEntry, 'name' | 'quantityNote' | 'expiresAt'>>) {
+    updateEntry(
+      id: string,
+      patch: Partial<Pick<PantryEntry, 'name' | 'quantityNote' | 'expiresAt'>>
+    ) {
       const nextName = patch.name?.trim()
       if (patch.name !== undefined && !nextName) return
-      this.entries = this.entries.map(e =>
+      this.entries = this.entries.map((e) =>
         e.id === id
           ? {
               ...e,
               ...(nextName !== undefined ? { name: nextName } : {}),
-              ...(patch.quantityNote !== undefined ? { quantityNote: patch.quantityNote.trim() } : {}),
+              ...(patch.quantityNote !== undefined
+                ? { quantityNote: patch.quantityNote.trim() }
+                : {}),
               ...(patch.expiresAt !== undefined ? { expiresAt: patch.expiresAt.trim() } : {}),
             }
           : e
@@ -92,7 +97,7 @@ export const usePantryStore = defineStore('pantry', {
     },
 
     removeEntry(id: string) {
-      this.entries = this.entries.filter(e => e.id !== id)
+      this.entries = this.entries.filter((e) => e.id !== id)
       this._persist()
     },
 
@@ -103,12 +108,12 @@ export const usePantryStore = defineStore('pantry', {
 
     /** Add every preset ingredient not already present. */
     applyPreset(label: string) {
-      const preset = PANTRY_PRESETS.find(p => p.label === label)
+      const preset = PANTRY_PRESETS.find((p) => p.label === label)
       if (!preset) return
-      const existing = new Set(this.entries.map(e => e.name.toLowerCase()))
+      const existing = new Set(this.entries.map((e) => e.name.toLowerCase()))
       const additions: PantryEntry[] = preset.ingredients
-        .filter(name => !existing.has(name.toLowerCase()))
-        .map(name => ({
+        .filter((name) => !existing.has(name.toLowerCase()))
+        .map((name) => ({
           id: newId(),
           name,
           quantityNote: '',

@@ -34,9 +34,9 @@ describe('consolidateItems (grocery consolidation)', () => {
       makeIdFactory()
     )
     expect(result).toHaveLength(1)
-    expect(result[0].name).toBe('Eggs')
-    expect(result[0].qtyNote).toBe('2 + 4')
-    expect(result[0].recipeOrigin).toBe('Omelette, Carbonara')
+    expect(result[0]!.name).toBe('Eggs')
+    expect(result[0]!.qtyNote).toBe('2 + 4')
+    expect(result[0]!.recipeOrigin).toBe('Omelette, Carbonara')
   })
 
   it('does not repeat an origin already present', () => {
@@ -45,13 +45,13 @@ describe('consolidateItems (grocery consolidation)', () => {
       [{ name: 'EGGS', recipeOrigin: 'omelette' }],
       makeIdFactory()
     )
-    expect(result[0].recipeOrigin).toBe('Omelette')
+    expect(result[0]!.recipeOrigin).toBe('Omelette')
   })
 
   it('unchecks a checked item when it is re-added', () => {
     const done = { ...eggs, checked: true }
     const result = consolidateItems([done], [{ name: 'Eggs' }], makeIdFactory())
-    expect(result[0].checked).toBe(false)
+    expect(result[0]!.checked).toBe(false)
   })
 
   it('consolidates duplicates within the incoming batch itself', () => {
@@ -64,14 +64,14 @@ describe('consolidateItems (grocery consolidation)', () => {
       makeIdFactory()
     )
     expect(result).toHaveLength(1)
-    expect(result[0].recipeOrigin).toBe('Bread, Pasta')
+    expect(result[0]!.recipeOrigin).toBe('Bread, Pasta')
   })
 
   it('skips blank names and does not mutate inputs', () => {
     const existing = [eggs]
     const incoming = [{ name: '   ' }, { name: 'Salt' }]
     const result = consolidateItems(existing, incoming, makeIdFactory())
-    expect(result.map(i => i.name)).toEqual(['Eggs', 'Salt'])
+    expect(result.map((i) => i.name)).toEqual(['Eggs', 'Salt'])
     expect(existing[0]).toEqual(eggs) // untouched
   })
 })
@@ -93,8 +93,8 @@ describe('parseGroceryJson (corrupt-input handling)', () => {
       items: [eggs, { id: 'x' }, null, { id: 'g2', name: 'Milk' }],
     })
     const result = parseGroceryJson(mixed)
-    expect(result.map(i => i.name)).toEqual(['Eggs', 'Milk'])
-    expect(result[1].checked).toBe(false)
+    expect(result.map((i) => i.name)).toEqual(['Eggs', 'Milk'])
+    expect(result[1]!.checked).toBe(false)
   })
 })
 

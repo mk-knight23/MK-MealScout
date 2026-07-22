@@ -53,7 +53,7 @@ describe('parsePantryJson (corrupt-input handling)', () => {
       ],
     })
     const result = parsePantryJson(raw)
-    expect(result.map(e => e.name)).toEqual(['Eggs', 'Milk'])
+    expect(result.map((e) => e.name)).toEqual(['Eggs', 'Milk'])
   })
 
   it('deduplicates entries with the same id', () => {
@@ -72,9 +72,9 @@ describe('parsePantryJson (corrupt-input handling)', () => {
   it('fills safe defaults for missing optional fields', () => {
     const raw = JSON.stringify({ version: 1, entries: [{ id: 'z', name: 'Butter' }] })
     const [entry] = parsePantryJson(raw)
-    expect(entry.quantityNote).toBe('')
-    expect(entry.expiresAt).toBe('')
-    expect(typeof entry.addedAt).toBe('string')
+    expect(entry!.quantityNote).toBe('')
+    expect(entry!.expiresAt).toBe('')
+    expect(typeof entry!.addedAt).toBe('string')
   })
 })
 

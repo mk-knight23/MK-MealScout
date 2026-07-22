@@ -28,11 +28,11 @@ describe('mergeIngredientMatches (pantry match scoring)', () => {
       { ingredient: 'Rice', recipes: [friedRice] },
       { ingredient: 'Cheese', recipes: [carbonara, friedRice] },
     ])
-    const byName = Object.fromEntries(merged.map(m => [m.recipe.strMeal, m]))
-    expect(byName['Fried Rice'].score).toBe(3)
-    expect(byName['Carbonara'].score).toBe(2)
-    expect(byName['Omelette'].score).toBe(1)
-    expect(byName['Fried Rice'].matchedIngredients).toEqual(['Cheese', 'Eggs', 'Rice'])
+    const byName = Object.fromEntries(merged.map((m) => [m.recipe.strMeal, m]))
+    expect(byName['Fried Rice']!.score).toBe(3)
+    expect(byName['Carbonara']!.score).toBe(2)
+    expect(byName['Omelette']!.score).toBe(1)
+    expect(byName['Fried Rice']!.matchedIngredients).toEqual(['Cheese', 'Eggs', 'Rice'])
   })
 
   it('sorts by score descending, then recipe name ascending', () => {
@@ -40,7 +40,7 @@ describe('mergeIngredientMatches (pantry match scoring)', () => {
       { ingredient: 'Eggs', recipes: [carbonara, omelette] },
       { ingredient: 'Rice', recipes: [friedRice] },
     ])
-    expect(merged.map(m => m.recipe.strMeal)).toEqual(['Carbonara', 'Fried Rice', 'Omelette'])
+    expect(merged.map((m) => m.recipe.strMeal)).toEqual(['Carbonara', 'Fried Rice', 'Omelette'])
   })
 
   it('does not double-count the same ingredient listed twice', () => {
@@ -49,13 +49,13 @@ describe('mergeIngredientMatches (pantry match scoring)', () => {
       { ingredient: 'Eggs', recipes: [omelette] },
     ])
     expect(merged).toHaveLength(1)
-    expect(merged[0].score).toBe(1)
+    expect(merged[0]!.score).toBe(1)
   })
 
   it('deduplicates the same recipe returned for one ingredient', () => {
     const merged = mergeIngredientMatches([{ ingredient: 'Eggs', recipes: [omelette, omelette] }])
     expect(merged).toHaveLength(1)
-    expect(merged[0].score).toBe(1)
+    expect(merged[0]!.score).toBe(1)
   })
 
   it('ignores blank ingredient labels and recipes without ids', () => {
@@ -65,7 +65,7 @@ describe('mergeIngredientMatches (pantry match scoring)', () => {
       { ingredient: 'Eggs', recipes: [broken as Recipe, omelette] },
     ])
     expect(merged).toHaveLength(1)
-    expect(merged[0].recipe.strMeal).toBe('Omelette')
+    expect(merged[0]!.recipe.strMeal).toBe('Omelette')
   })
 })
 

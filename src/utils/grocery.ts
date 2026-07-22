@@ -89,7 +89,7 @@ function mergeOrigins(existing: string, incoming: string): string {
   const b = incoming.trim()
   if (!b) return a
   if (!a) return b
-  const parts = a.split(',').map(s => s.trim().toLowerCase())
+  const parts = a.split(',').map((s) => s.trim().toLowerCase())
   if (parts.includes(b.toLowerCase())) return a
   return `${a}, ${b}`
 }
@@ -105,7 +105,7 @@ export function consolidateItems(
   incoming: NewGroceryItem[],
   makeId: () => string
 ): GroceryItem[] {
-  const result = existing.map(item => ({ ...item }))
+  const result = existing.map((item) => ({ ...item }))
   const indexByName = new Map<string, number>()
   result.forEach((item, i) => indexByName.set(item.name.toLowerCase(), i))
 
@@ -116,9 +116,9 @@ export function consolidateItems(
     const qtyNote = (raw.qtyNote ?? '').trim()
     const recipeOrigin = (raw.recipeOrigin ?? '').trim()
     const existingIndex = indexByName.get(key)
+    const current = existingIndex !== undefined ? result[existingIndex] : undefined
 
-    if (existingIndex !== undefined) {
-      const current = result[existingIndex]
+    if (existingIndex !== undefined && current) {
       result[existingIndex] = {
         ...current,
         qtyNote: mergeNotes(current.qtyNote, qtyNote),
@@ -136,7 +136,7 @@ export function consolidateItems(
 
 /** Plain-text rendering used for copy-to-clipboard and .txt download. */
 export function formatGroceryText(items: GroceryItem[]): string {
-  const lines = items.map(item => {
+  const lines = items.map((item) => {
     const box = item.checked ? '[x]' : '[ ]'
     const qty = item.qtyNote ? ` — ${item.qtyNote}` : ''
     const origin = item.recipeOrigin ? ` (for: ${item.recipeOrigin})` : ''

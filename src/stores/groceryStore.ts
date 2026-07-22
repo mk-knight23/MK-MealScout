@@ -37,12 +37,12 @@ export const useGroceryStore = defineStore('grocery', {
   }),
 
   getters: {
-    remaining: state => state.items.filter(i => !i.checked),
+    remaining: (state) => state.items.filter((i) => !i.checked),
     remainingCount(): number {
       return this.remaining.length
     },
-    completedCount: state => state.items.filter(i => i.checked).length,
-    asText: state => formatGroceryText(state.items),
+    completedCount: (state) => state.items.filter((i) => i.checked).length,
+    asText: (state) => formatGroceryText(state.items),
   },
 
   actions: {
@@ -52,7 +52,7 @@ export const useGroceryStore = defineStore('grocery', {
 
     /** Add one or many items, consolidating case-insensitive duplicates. */
     addItems(incoming: NewGroceryItem[]) {
-      const valid = incoming.filter(i => i.name.trim().length > 0)
+      const valid = incoming.filter((i) => i.name.trim().length > 0)
       if (valid.length === 0) return
       this.items = consolidateItems(this.items, valid, newId)
       this._persist()
@@ -65,7 +65,7 @@ export const useGroceryStore = defineStore('grocery', {
     updateItem(id: string, patch: Partial<Pick<GroceryItem, 'name' | 'qtyNote'>>) {
       const nextName = patch.name?.trim()
       if (patch.name !== undefined && !nextName) return
-      this.items = this.items.map(i =>
+      this.items = this.items.map((i) =>
         i.id === id
           ? {
               ...i,
@@ -78,17 +78,17 @@ export const useGroceryStore = defineStore('grocery', {
     },
 
     toggleChecked(id: string) {
-      this.items = this.items.map(i => (i.id === id ? { ...i, checked: !i.checked } : i))
+      this.items = this.items.map((i) => (i.id === id ? { ...i, checked: !i.checked } : i))
       this._persist()
     },
 
     removeItem(id: string) {
-      this.items = this.items.filter(i => i.id !== id)
+      this.items = this.items.filter((i) => i.id !== id)
       this._persist()
     },
 
     clearCompleted() {
-      this.items = this.items.filter(i => !i.checked)
+      this.items = this.items.filter((i) => !i.checked)
       this._persist()
     },
 

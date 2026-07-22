@@ -3,33 +3,48 @@ import { onMounted, ref, watchEffect } from 'vue'
 import { useRecipeStore } from './stores/recipeStore'
 import { useSettingsStore } from './stores/settings'
 import { useStatsStore } from './stores/stats'
+import { usePantryStore } from './stores/pantryStore'
+import { useGroceryStore } from './stores/groceryStore'
 import { useAudio } from './composables/useAudio'
 import { useKeyboardControls } from './composables/useKeyboardControls'
 import SettingsPanel from './components/ui/SettingsPanel.vue'
+import PantryManager from './components/pantry/PantryManager.vue'
+import CookMatches from './components/pantry/CookMatches.vue'
+import GroceryView from './components/grocery/GroceryView.vue'
+import RecipeDetailModal from './components/recipe/RecipeDetailModal.vue'
+import type { Recipe } from './types/recipe'
 import {
   Search,
   Heart,
   ChefHat,
-  Clock,
   MapPin,
-  Tag,
   ArrowRight,
   Moon,
   Sun,
-  X,
-  PlayCircle,
-  ExternalLink,
   Settings,
+  Refrigerator,
+  ShoppingCart,
+  Compass,
 } from 'lucide-vue-next'
+
+type AppView = 'discover' | 'pantry' | 'grocery'
 
 const store = useRecipeStore()
 const settingsStore = useSettingsStore()
 const statsStore = useStatsStore()
+const pantryStore = usePantryStore()
+const groceryStore = useGroceryStore()
 const audio = useAudio()
 const { lastAction } = useKeyboardControls()
 
-const showModal = ref(false)
-const selectedRecipe = ref<any>(null)
+const activeView = ref<AppView>('discover')
+const selectedRecipeId = ref<string | null>(null)
+
+const NAV_ITEMS: { view: AppView; label: string }[] = [
+  { view: 'discover', label: 'Discover' },
+  { view: 'pantry', label: 'Pantry' },
+  { view: 'grocery', label: 'Grocery' },
+]
 
 onMounted(() => {
   store.fetchCategories()
@@ -41,8 +56,8 @@ watchEffect(() => {
   if (lastAction.value === 'help') {
     settingsStore.toggleHelp()
   }
-  if (lastAction.value === 'close' && showModal.value) {
-    showModal.value = false
+  if (lastAction.value === 'close' && selectedRecipeId.value) {
+    selectedRecipeId.value = null
   }
 })
 
@@ -58,30 +73,19 @@ const openSettings = () => {
   settingsStore.toggleHelp()
 }
 
-const openRecipe = async (recipe: any) => {
-  statsStore.recordRecipeView()
-  try {
-    const { data } = await fetch(
-      `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipe.idMeal}`
-    ).then((res) => res.json())
-    selectedRecipe.value = data.meals[0]
-    showModal.value = true
-    audio.playSuccess()
-  } catch (err) {
-    audio.playError()
-  }
+const switchView = (view: AppView) => {
+  audio.playClick()
+  activeView.value = view
 }
 
-const getIngredients = (recipe: any) => {
-  const ingredients = []
-  for (let i = 1; i <= 20; i++) {
-    const name = recipe[`strIngredient${i}`]
-    const measure = recipe[`strMeasure${i}`]
-    if (name && name.trim()) {
-      ingredients.push(`${measure} ${name}`)
-    }
-  }
-  return ingredients
+const openRecipe = (recipe: Recipe) => {
+  openRecipeById(recipe.idMeal)
+}
+
+const openRecipeById = (id: string) => {
+  statsStore.recordRecipeView()
+  selectedRecipeId.value = id
+  audio.playClick()
 }
 
 const onSearch = () => {
@@ -116,6 +120,33 @@ const onSearch = () => {
           </h1>
         </div>
 
+        <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+          <button
+            v-for="item in NAV_ITEMS"
+            :key="item.view"
+            @click="switchView(item.view)"
+            class="px-5 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all"
+            :class="
+              activeView === item.view
+                ? 'bg-culinary-primary text-white shadow-lg shadow-culinary-primary/30'
+                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+            "
+            :aria-pressed="activeView === item.view"
+          >
+            {{ item.label }}
+            <span
+              v-if="item.view === 'pantry' && pantryStore.count > 0"
+              class="ml-1 opacity-70"
+              >{{ pantryStore.count }}</span
+            >
+            <span
+              v-if="item.view === 'grocery' && groceryStore.remainingCount > 0"
+              class="ml-1 opacity-70"
+              >{{ groceryStore.remainingCount }}</span
+            >
+          </button>
+        </nav>
+
         <div class="flex items-center space-x-4">
           <button
             @click="openSettings"
@@ -144,9 +175,32 @@ const onSearch = () => {
           </div>
         </div>
       </div>
+      <nav
+        class="md:hidden max-w-7xl mx-auto flex items-center gap-1 pt-3"
+        aria-label="Main navigation (mobile)"
+      >
+        <button
+          v-for="item in NAV_ITEMS"
+          :key="item.view"
+          @click="switchView(item.view)"
+          class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all"
+          :class="
+            activeView === item.view
+              ? 'bg-culinary-primary text-white'
+              : 'text-slate-500 bg-slate-100 dark:bg-slate-800'
+          "
+          :aria-pressed="activeView === item.view"
+        >
+          <Compass v-if="item.view === 'discover'" :size="14" aria-hidden="true" />
+          <Refrigerator v-if="item.view === 'pantry'" :size="14" aria-hidden="true" />
+          <ShoppingCart v-if="item.view === 'grocery'" :size="14" aria-hidden="true" />
+          {{ item.label }}
+        </button>
+      </nav>
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-12 space-y-16" role="main">
+      <template v-if="activeView === 'discover'">
       <!-- Search & Hero -->
       <section class="text-center space-y-8 max-w-3xl mx-auto" aria-labelledby="hero-heading">
         <div class="space-y-4">
@@ -161,7 +215,8 @@ const onSearch = () => {
             >
           </h2>
           <p class="text-slate-500 dark:text-slate-400 font-medium text-lg">
-            Browse through 500+ premium recipes with high-res imagery and nutritional data.
+            Browse hundreds of community recipes with high-res imagery, or cook from what is
+            already in your pantry.
           </p>
         </div>
 
@@ -291,7 +346,9 @@ const onSearch = () => {
       >
         <ChefHat class="mx-auto text-slate-300 mb-6" :size="64" />
         <h3 class="text-2xl font-display font-bold">No recipes found</h3>
-        <p class="text-slate-500 mt-2">Try a different keyword or category.</p>
+        <p class="text-slate-500 mt-2">
+          {{ store.errorMessage || 'Try a different keyword or category.' }}
+        </p>
         <button
           @click="store.searchRecipes('')"
           class="mt-8 text-culinary-primary font-black uppercase tracking-widest text-xs"
@@ -299,6 +356,18 @@ const onSearch = () => {
           Reset Search
         </button>
       </div>
+      </template>
+
+      <!-- Pantry view: manage ingredients + ingredient-first matching -->
+      <template v-else-if="activeView === 'pantry'">
+        <PantryManager />
+        <CookMatches @open-recipe="openRecipeById" />
+      </template>
+
+      <!-- Grocery view -->
+      <template v-else>
+        <GroceryView />
+      </template>
     </main>
 
     <!-- Footer -->
@@ -378,112 +447,7 @@ const onSearch = () => {
     </footer>
 
     <!-- Recipe Detail Modal -->
-    <div
-      v-if="showModal && selectedRecipe"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
-      role="dialog"
-      aria-modal="true"
-      :aria-labelledby="`recipe-${selectedRecipe.idMeal}-title`"
-    >
-      <div
-        @click="showModal = false"
-        class="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
-        aria-hidden="true"
-      ></div>
-      <div
-        class="relative glass w-full max-w-5xl rounded-[3rem] overflow-hidden flex flex-col md:flex-row h-full max-h-[85vh]"
-        role="document"
-      >
-        <button
-          @click="showModal = false"
-          class="absolute top-6 right-6 z-10 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-xl hover:scale-110 transition-transform"
-          aria-label="Close recipe details"
-        >
-          <X :size="20" />
-        </button>
-
-        <div class="w-full md:w-5/12 h-64 md:h-auto relative">
-          <img :src="selectedRecipe.strMealThumb" class="w-full h-full object-cover" alt="" />
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
-          ></div>
-          <div class="absolute bottom-10 left-10 text-white space-y-2">
-            <div class="flex gap-2">
-              <span
-                class="px-3 py-1 bg-culinary-primary text-[10px] font-black uppercase rounded-lg"
-                >{{ selectedRecipe.strCategory }}</span
-              >
-              <span
-                class="px-3 py-1 bg-white/20 backdrop-blur-md text-[10px] font-black uppercase rounded-lg border border-white/10"
-                >{{ selectedRecipe.strArea }}</span
-              >
-            </div>
-            <h2
-              :id="`recipe-${selectedRecipe.idMeal}-title`"
-              class="text-4xl font-display font-black leading-tight"
-            >
-              {{ selectedRecipe.strMeal }}
-            </h2>
-          </div>
-        </div>
-
-        <div class="w-full md:w-7/12 p-8 md:p-12 overflow-y-auto custom-scrollbar space-y-10">
-          <div class="grid grid-cols-2 gap-8 pt-4">
-            <div class="space-y-4">
-              <h4
-                class="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"
-              >
-                <Tag :size="14" class="text-culinary-primary" /> Ingredients
-              </h4>
-              <ul class="space-y-3">
-                <li
-                  v-for="ing in getIngredients(selectedRecipe)"
-                  :key="ing"
-                  class="text-sm font-bold flex items-center gap-2"
-                >
-                  <div class="w-1.5 h-1.5 rounded-full bg-culinary-primary/30"></div>
-                  {{ ing }}
-                </li>
-              </ul>
-            </div>
-            <div class="space-y-4">
-              <h4
-                class="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"
-              >
-                <Clock :size="14" class="text-culinary-primary" /> Preparation
-              </h4>
-              <div class="space-y-4">
-                <div
-                  class="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between group cursor-pointer"
-                >
-                  <span class="text-xs font-black uppercase">Watch Tutorial</span>
-                  <PlayCircle
-                    class="text-culinary-primary group-hover:scale-110 transition-transform"
-                  />
-                </div>
-                <div
-                  class="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between group cursor-pointer"
-                >
-                  <span class="text-xs font-black uppercase">Full Article</span>
-                  <ExternalLink :size="18" class="text-slate-400" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="space-y-4 pt-8 border-t border-slate-100 dark:border-slate-800">
-            <h4 class="text-xs font-black uppercase tracking-widest text-slate-400">
-              Cooking Instructions
-            </h4>
-            <p
-              class="text-sm leading-relaxed font-medium text-slate-600 dark:text-slate-400 whitespace-pre-line"
-            >
-              {{ selectedRecipe.strInstructions }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <RecipeDetailModal :recipe-id="selectedRecipeId" @close="selectedRecipeId = null" />
 
     <SettingsPanel />
   </div>

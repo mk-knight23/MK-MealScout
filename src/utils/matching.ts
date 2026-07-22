@@ -46,9 +46,7 @@ export function mergeIngredientMatches(results: IngredientResult[]): RecipeMatch
       matchedIngredients: Array.from(matched).sort((a, b) => a.localeCompare(b)),
       score: matched.size,
     }))
-    .sort(
-      (a, b) => b.score - a.score || a.recipe.strMeal.localeCompare(b.recipe.strMeal)
-    )
+    .sort((a, b) => b.score - a.score || a.recipe.strMeal.localeCompare(b.recipe.strMeal))
 }
 
 /** Human label for the match badge, e.g. "Matches 3 of your ingredients". */

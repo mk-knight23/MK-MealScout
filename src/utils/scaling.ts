@@ -43,7 +43,7 @@ function normalizeFractions(input: string): string {
 
 function parseFractionToken(token: string): number | null {
   const m = token.match(/^(\d+)\/(\d+)$/)
-  if (!m) return null
+  if (!m || m[1] === undefined || m[2] === undefined) return null
   const num = parseInt(m[1], 10)
   const den = parseInt(m[2], 10)
   if (den === 0) return null
@@ -60,7 +60,7 @@ export function parseMeasure(raw: string): ParsedMeasure {
   let idx = 0
 
   const rangeMatch = tokens[0]?.match(/^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/)
-  if (rangeMatch) {
+  if (rangeMatch && rangeMatch[1] !== undefined && rangeMatch[2] !== undefined) {
     quantity = (parseFloat(rangeMatch[1]) + parseFloat(rangeMatch[2])) / 2
     idx = 1
   } else {
@@ -85,7 +85,7 @@ export function parseMeasure(raw: string): ParsedMeasure {
   let suffix = ''
 
   if (rest.length > 0) {
-    const candidate = rest[0].toLowerCase().replace(/\./g, '')
+    const candidate = (rest[0] ?? '').toLowerCase().replace(/\./g, '')
     if (KNOWN_UNITS.has(candidate)) {
       unit = candidate
       suffix = rest.slice(1).join(' ')
