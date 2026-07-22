@@ -21,4 +21,6 @@ export interface RecipeState {
   loading: boolean
   selectedCategory: string
   searchQuery: string
+  errorCode: string | null
+  errorMessage: string | null
 }
