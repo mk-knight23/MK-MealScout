@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { nextTick, ref, watch } from 'vue'
 import { useSettingsStore, type ThemeMode } from '../../stores/settings'
 import { useStatsStore } from '../../stores/stats'
 import { useAudio } from '../../composables/useAudio'
@@ -8,6 +9,53 @@ const settingsStore = useSettingsStore()
 const statsStore = useStatsStore()
 const audio = useAudio()
 const { getShortcuts } = useKeyboardControls()
+
+const dialogRef = ref<HTMLElement | null>(null)
+const closeButtonRef = ref<HTMLElement | null>(null)
+let previouslyFocused: HTMLElement | null = null
+
+function getFocusableElements(): HTMLElement[] {
+  if (!dialogRef.value) return []
+  const selector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  return Array.from(dialogRef.value.querySelectorAll<HTMLElement>(selector)).filter(
+    el => !el.hasAttribute('disabled')
+  )
+}
+
+/** Keep Tab focus cycling inside the dialog while it is open. */
+function trapFocus(event: KeyboardEvent): void {
+  if (event.key !== 'Tab') return
+  const focusable = getFocusableElements()
+  const first = focusable[0]
+  const last = focusable[focusable.length - 1]
+  if (!first || !last) return
+  const active = document.activeElement
+  const outside = !dialogRef.value?.contains(active)
+  if (event.shiftKey) {
+    if (active === first || outside) {
+      event.preventDefault()
+      last.focus()
+    }
+  } else if (active === last || outside) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
+// Focus management: move focus into the dialog on open, restore it on close.
+watch(
+  () => settingsStore.showHelp,
+  async open => {
+    if (open) {
+      previouslyFocused = document.activeElement as HTMLElement | null
+      await nextTick()
+      closeButtonRef.value?.focus()
+    } else if (previouslyFocused) {
+      previouslyFocused.focus()
+      previouslyFocused = null
+    }
+  }
+)
 
 const themeModes: { value: ThemeMode; label: string }[] = [
   { value: 'dark', label: 'Dark' },
@@ -47,19 +95,32 @@ function onResetStats() {
       @click="close"
     >
       <div
+        ref="dialogRef"
         class="bg-white dark:bg-culinary-dark rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-title"
         @click.stop
+        @keydown="trapFocus"
       >
         <div class="p-8">
           <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-display font-black dark:text-white">
+            <h2
+              id="settings-title"
+              class="text-2xl font-display font-black dark:text-white"
+            >
               Settings
             </h2>
             <button
+              ref="closeButtonRef"
               class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Close settings"
               @click="close"
             >
-              <span class="text-xl dark:text-white">✕</span>
+              <span
+                class="text-xl dark:text-white"
+                aria-hidden="true"
+              >✕</span>
             </button>
           </div>
 
