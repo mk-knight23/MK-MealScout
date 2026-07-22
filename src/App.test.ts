@@ -58,4 +58,12 @@ describe('MK MealScout Recipe Finder', () => {
     render(App)
     expect(screen.getByRole('status', { name: /saved recipes/i })).toBeInTheDocument()
   })
+
+  it('binds the favorites aria-label instead of shipping a literal mustache (MS-3)', () => {
+    render(App)
+    const status = screen.getByRole('status', { name: /saved recipes/i })
+    // The old bug shipped the literal string "{{ store.favorites.length }} saved recipes".
+    expect(status).toHaveAccessibleName('0 saved recipes')
+    expect(status.getAttribute('aria-label')).not.toContain('{{')
+  })
 })

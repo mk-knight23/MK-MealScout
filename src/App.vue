@@ -182,7 +182,7 @@ const onSearch = () => {
           <div
             class="hidden sm:flex items-center space-x-2 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-2xl border border-slate-200 dark:border-slate-700"
             role="status"
-            aria-label="{{ store.favorites.length }} saved recipes"
+            :aria-label="`${store.favorites.length} saved recipes`"
           >
             <Heart
               class="text-culinary-primary fill-culinary-primary"
@@ -426,7 +426,7 @@ const onSearch = () => {
       class="mt-48 pb-12 border-t border-slate-200 dark:border-slate-800 pt-20"
       role="contentinfo"
     >
-      <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
         <div class="space-y-6">
           <div class="flex items-center space-x-2">
             <ChefHat
@@ -470,24 +470,6 @@ const onSearch = () => {
               Grocery Integrator
             </li>
           </ul>
-        </div>
-        <div class="bg-culinary-primary/5 p-8 rounded-[2rem] border border-culinary-primary/10">
-          <h4 class="text-sm font-black text-culinary-primary mb-2">
-            Newsletter
-          </h4>
-          <p class="text-xs text-slate-500 mb-4 font-medium">
-            Get fresh recipes every weekend.
-          </p>
-          <div class="flex gap-2">
-            <input
-              type="email"
-              placeholder="email"
-              class="bg-white dark:bg-slate-900 border-none rounded-xl px-4 text-xs flex-1 outline-none focus:ring-2 focus:ring-culinary-primary"
-            >
-            <button class="bg-culinary-primary p-2.5 rounded-xl text-white">
-              <ArrowRight :size="16" />
-            </button>
-          </div>
         </div>
       </div>
       <div
