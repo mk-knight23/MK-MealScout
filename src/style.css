@@ -10,8 +10,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-culinary-primary: #f59e0b;
-  --color-culinary-secondary: #ea580c;
+  /* amber-700 / orange-700: white text clears WCAG AA (5.02:1 and 5.18:1).
+     The previous #f59e0b/#ea580c gave white only 2.15:1 / 3.56:1 on every CTA. */
+  --color-culinary-primary: #b45309;
+  --color-culinary-secondary: #c2410c;
   --color-culinary-accent: #10b981;
   --color-culinary-bg: #ece4f0;
   --color-culinary-dark: #0f0a1a;
