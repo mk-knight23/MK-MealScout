@@ -4,6 +4,19 @@ import { KEYBOARD_SHORTCUTS } from '../utils/constants'
 
 type KeyAction = 'save' | 'search' | 'close' | 'help' | 'none'
 
+/**
+ * True when the event originated from a field the user is typing into
+ * (input, textarea, select or contenteditable). Used to stop single-key
+ * shortcuts such as `?` or `/` from firing — and being swallowed — while the
+ * user is typing, e.g. in the recipe search box.
+ */
+export function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false
+  const el = target.closest('input, textarea, select, [contenteditable]')
+  if (!el) return false
+  return el.getAttribute('contenteditable') !== 'false'
+}
+
 export function useKeyboardControls() {
   const settingsStore = useSettingsStore()
   const lastAction = ref<KeyAction>('none')
@@ -18,6 +31,10 @@ export function useKeyboardControls() {
   }
 
   function handleKeyDown(e: KeyboardEvent): void {
+    // Never hijack keys while the user is typing in a field. Escape is allowed
+    // through so it can still close an open modal from within an input.
+    if (e.key !== 'Escape' && isEditableTarget(e.target)) return
+
     const action = actionMap[e.key] || 'none'
 
     if (e.ctrlKey || e.metaKey) {

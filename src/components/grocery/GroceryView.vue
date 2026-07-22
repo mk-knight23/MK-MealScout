@@ -206,7 +206,7 @@ const downloadJson = () => {
           <input
             type="checkbox"
             :checked="item.checked"
-            class="w-4 h-4 rounded accent-[#f59e0b] shrink-0"
+            class="w-4 h-4 rounded accent-[#b45309] shrink-0"
             :aria-label="`Mark ${item.name} as ${item.checked ? 'not bought' : 'bought'}`"
             @change="grocery.toggleChecked(item.id)"
           >

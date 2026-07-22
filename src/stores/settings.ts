@@ -34,8 +34,8 @@ function loadSettings(): Settings {
 export const useSettingsStore = defineStore('settings', () => {
   const savedSettings = loadSettings()
   const soundEnabled = ref(savedSettings.soundEnabled)
-  const theme = ref<ThemeMode>(defaultSettings.theme)
-  const reducedMotion = ref(defaultSettings.reducedMotion)
+  const theme = ref<ThemeMode>(savedSettings.theme)
+  const reducedMotion = ref(savedSettings.reducedMotion)
   const showHelp = ref(defaultSettings.showHelp)
   const isDarkMode = ref(true)
 

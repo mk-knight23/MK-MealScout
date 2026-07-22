@@ -240,7 +240,7 @@ const addUncheckedToGrocery = () => {
                   <input
                     type="checkbox"
                     :checked="!!haveIngredient[item.name]"
-                    class="w-4 h-4 rounded accent-[#f59e0b]"
+                    class="w-4 h-4 rounded accent-[#b45309]"
                     :aria-label="`I already have ${item.name}`"
                     @change="toggleHave(item.name)"
                   >

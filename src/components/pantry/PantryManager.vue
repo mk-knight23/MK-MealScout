@@ -11,6 +11,7 @@ const nameInput = ref('')
 const qtyInput = ref('')
 const expiryInput = ref('')
 const suggestionsOpen = ref(false)
+const activeIndex = ref(-1)
 
 const editingId = ref<string | null>(null)
 const editName = ref('')
@@ -25,6 +26,44 @@ const suggestions = computed(() => {
     .slice(0, 8)
 })
 
+const isSuggestionsVisible = computed(() => suggestionsOpen.value && suggestions.value.length > 0)
+
+const openSuggestions = () => {
+  suggestionsOpen.value = true
+}
+
+const onInput = () => {
+  suggestionsOpen.value = true
+  activeIndex.value = -1
+}
+
+const closeSuggestions = () => {
+  suggestionsOpen.value = false
+  activeIndex.value = -1
+}
+
+/** Move the active-descendant highlight, opening the list and wrapping around. */
+const moveActive = (delta: number) => {
+  const count = suggestions.value.length
+  if (count === 0) return
+  suggestionsOpen.value = true
+  const next = activeIndex.value + delta
+  if (next < 0) activeIndex.value = count - 1
+  else if (next >= count) activeIndex.value = 0
+  else activeIndex.value = next
+}
+
+/** Enter selects the highlighted suggestion; otherwise the form submits (addEntry). */
+const onEnter = (event: KeyboardEvent) => {
+  if (isSuggestionsVisible.value && activeIndex.value >= 0) {
+    const picked = suggestions.value[activeIndex.value]
+    if (picked) {
+      event.preventDefault()
+      pickSuggestion(picked)
+    }
+  }
+}
+
 onMounted(() => {
   pantry.loadKnownIngredients()
 })
@@ -36,12 +75,12 @@ const addEntry = () => {
     qtyInput.value = ''
     expiryInput.value = ''
   }
-  suggestionsOpen.value = false
+  closeSuggestions()
 }
 
 const pickSuggestion = (name: string) => {
   nameInput.value = name
-  suggestionsOpen.value = false
+  closeSuggestions()
 }
 
 const startEdit = (entry: PantryEntry) => {
@@ -117,29 +156,42 @@ const expiryLabel = (entry: PantryEntry): string => {
           class="w-full bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-3 text-sm outline-none focus:border-culinary-primary transition-all"
           aria-label="Ingredient name"
           autocomplete="off"
-          @focus="suggestionsOpen = true"
-          @input="suggestionsOpen = true"
-          @blur="suggestionsOpen = false"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-controls="pantry-suggestions"
+          :aria-expanded="isSuggestionsVisible"
+          :aria-activedescendant="activeIndex >= 0 ? `pantry-suggestion-${activeIndex}` : undefined"
+          @focus="openSuggestions"
+          @input="onInput"
+          @blur="closeSuggestions"
+          @keydown.down.prevent="moveActive(1)"
+          @keydown.up.prevent="moveActive(-1)"
+          @keydown.enter="onEnter"
+          @keydown.esc="closeSuggestions"
         >
         <ul
-          v-if="suggestionsOpen && suggestions.length"
+          v-if="isSuggestionsVisible"
+          id="pantry-suggestions"
           class="absolute z-20 mt-2 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden"
           role="listbox"
           aria-label="Ingredient suggestions"
         >
           <li
-            v-for="suggestion in suggestions"
+            v-for="(suggestion, index) in suggestions"
+            :id="`pantry-suggestion-${index}`"
             :key="suggestion"
             role="option"
-            :aria-selected="false"
+            :aria-selected="index === activeIndex"
+            class="px-5 py-2.5 text-sm font-medium cursor-pointer transition-colors"
+            :class="
+              index === activeIndex
+                ? 'bg-culinary-primary/10 text-culinary-primary'
+                : 'hover:bg-culinary-primary/10 hover:text-culinary-primary'
+            "
+            @mousedown.prevent="pickSuggestion(suggestion)"
+            @mouseenter="activeIndex = index"
           >
-            <button
-              type="button"
-              class="w-full text-left px-5 py-2.5 text-sm font-medium hover:bg-culinary-primary/10 hover:text-culinary-primary transition-colors"
-              @mousedown.prevent="pickSuggestion(suggestion)"
-            >
-              {{ suggestion }}
-            </button>
+            {{ suggestion }}
           </li>
         </ul>
       </div>

@@ -168,8 +168,13 @@ const findMatches = async () => {
         <article
           v-for="match in matches"
           :key="match.recipe.idMeal"
-          class="recipe-card group cursor-pointer"
+          class="recipe-card group cursor-pointer focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-culinary-primary"
+          role="button"
+          tabindex="0"
+          :aria-label="`View recipe details for ${match.recipe.strMeal}`"
           @click="emit('open-recipe', match.recipe.idMeal)"
+          @keydown.enter.prevent="emit('open-recipe', match.recipe.idMeal)"
+          @keydown.space.prevent="emit('open-recipe', match.recipe.idMeal)"
         >
           <div class="relative aspect-video overflow-hidden">
             <img
