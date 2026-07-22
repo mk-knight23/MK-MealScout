@@ -1,5 +1,14 @@
 @import 'tailwindcss';
 
+/**
+ * Class-based dark mode. Without this, Tailwind v4's default `dark:` variant
+ * follows the OS `prefers-color-scheme` media query, while the app toggles a
+ * `.dark`/`.light` class on <html>. That desync left the light theme illegible
+ * under OS-dark (light-mode surfaces + dark-mode text). This binds `dark:`
+ * utilities to the `.dark` class instead so the chosen theme always wins.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-culinary-primary: #f59e0b;
   --color-culinary-secondary: #ea580c;
