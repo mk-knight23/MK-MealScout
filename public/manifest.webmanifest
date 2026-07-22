@@ -1,0 +1,21 @@
+{
+  "name": "MK MealScout — Ingredient-First Recipe Finder",
+  "short_name": "MealScout",
+  "description": "Turn ingredients you already have into practical recipes, meal plans, and grocery lists. No signup required.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fdf7f0",
+  "theme_color": "#c2410c",
+  "orientation": "any",
+  "categories": ["food", "lifestyle", "productivity"],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍳</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
