@@ -146,6 +146,13 @@ export const useRecipeStore = defineStore('recipe', {
       }
     },
 
+    /** Replace all favorites (used by JSON backup restore). */
+    replaceFavorites(ids: string[]) {
+      const next = [...new Set(ids.filter(id => typeof id === 'string' && id))]
+      this.favorites = next
+      writeFavorites(next)
+    },
+
     toggleFavorite(id: string) {
       const next = this.favorites.includes(id)
         ? this.favorites.filter(f => f !== id)

@@ -8,6 +8,7 @@ import { useGroceryStore } from './stores/groceryStore'
 import { useAudio } from './composables/useAudio'
 import { useKeyboardControls } from './composables/useKeyboardControls'
 import SettingsPanel from './components/ui/SettingsPanel.vue'
+import DataStrip from './components/ui/DataStrip.vue'
 import PantryManager from './components/pantry/PantryManager.vue'
 import CookMatches from './components/pantry/CookMatches.vue'
 import GroceryView from './components/grocery/GroceryView.vue'
@@ -360,12 +361,14 @@ const onSearch = () => {
 
       <!-- Pantry view: manage ingredients + ingredient-first matching -->
       <template v-else-if="activeView === 'pantry'">
+        <DataStrip />
         <PantryManager />
         <CookMatches @open-recipe="openRecipeById" />
       </template>
 
       <!-- Grocery view -->
       <template v-else>
+        <DataStrip />
         <GroceryView />
       </template>
     </main>
