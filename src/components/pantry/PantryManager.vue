@@ -76,18 +76,28 @@ const expiryLabel = (entry: PantryEntry): string => {
 </script>
 
 <template>
-  <section class="glass rounded-[2rem] p-8 space-y-8" aria-labelledby="pantry-heading">
+  <section
+    class="glass rounded-[2rem] p-8 space-y-8"
+    aria-labelledby="pantry-heading"
+  >
     <div class="flex flex-wrap items-center justify-between gap-4">
-      <h3 id="pantry-heading" class="text-2xl font-display font-bold">
+      <h3
+        id="pantry-heading"
+        class="text-2xl font-display font-bold"
+      >
         My Pantry
         <span class="text-sm font-bold text-slate-400 ml-2">{{ pantry.count }} ingredients</span>
       </h3>
-      <div class="flex flex-wrap gap-2" role="group" aria-label="Pantry presets">
+      <div
+        class="flex flex-wrap gap-2"
+        role="group"
+        aria-label="Pantry presets"
+      >
         <button
           v-for="preset in pantry.presets"
           :key="preset.label"
-          @click="pantry.applyPreset(preset.label)"
           class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary transition-all"
+          @click="pantry.applyPreset(preset.label)"
         >
           <Sparkles :size="14" /> {{ preset.label }}
         </button>
@@ -95,7 +105,10 @@ const expiryLabel = (entry: PantryEntry): string => {
     </div>
 
     <!-- Add form -->
-    <form class="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_auto] gap-3" @submit.prevent="addEntry">
+    <form
+      class="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_auto] gap-3"
+      @submit.prevent="addEntry"
+    >
       <div class="relative">
         <input
           v-model="nameInput"
@@ -107,14 +120,19 @@ const expiryLabel = (entry: PantryEntry): string => {
           @focus="suggestionsOpen = true"
           @input="suggestionsOpen = true"
           @blur="suggestionsOpen = false"
-        />
+        >
         <ul
           v-if="suggestionsOpen && suggestions.length"
           class="absolute z-20 mt-2 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden"
           role="listbox"
           aria-label="Ingredient suggestions"
         >
-          <li v-for="suggestion in suggestions" :key="suggestion" role="option" :aria-selected="false">
+          <li
+            v-for="suggestion in suggestions"
+            :key="suggestion"
+            role="option"
+            :aria-selected="false"
+          >
             <button
               type="button"
               class="w-full text-left px-5 py-2.5 text-sm font-medium hover:bg-culinary-primary/10 hover:text-culinary-primary transition-colors"
@@ -131,13 +149,13 @@ const expiryLabel = (entry: PantryEntry): string => {
         placeholder="Qty note (optional)"
         class="bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-3 text-sm outline-none focus:border-culinary-primary transition-all"
         aria-label="Quantity note"
-      />
+      >
       <input
         v-model="expiryInput"
         type="date"
         class="bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-3 text-sm outline-none focus:border-culinary-primary transition-all text-slate-500"
         aria-label="Expiry date"
-      />
+      >
       <button
         type="submit"
         class="flex items-center justify-center gap-2 bg-culinary-primary hover:bg-culinary-secondary text-white px-6 py-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95"
@@ -146,17 +164,31 @@ const expiryLabel = (entry: PantryEntry): string => {
         <Plus :size="16" /> Add
       </button>
     </form>
-    <p v-if="pantry.ingredientsError" class="text-xs text-slate-400 font-medium">
+    <p
+      v-if="pantry.ingredientsError"
+      class="text-xs text-slate-400 font-medium"
+    >
       {{ pantry.ingredientsError }} You can still type ingredient names manually.
     </p>
 
     <!-- Entries -->
-    <div v-if="pantry.count === 0" class="text-center py-10 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
-      <p class="text-slate-500 font-medium">Your pantry is empty.</p>
-      <p class="text-xs text-slate-400 mt-1">Add ingredients above or start with a preset.</p>
+    <div
+      v-if="pantry.count === 0"
+      class="text-center py-10 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl"
+    >
+      <p class="text-slate-500 font-medium">
+        Your pantry is empty.
+      </p>
+      <p class="text-xs text-slate-400 mt-1">
+        Add ingredients above or start with a preset.
+      </p>
     </div>
 
-    <ul v-else class="grid grid-cols-1 md:grid-cols-2 gap-3" aria-label="Pantry ingredients">
+    <ul
+      v-else
+      class="grid grid-cols-1 md:grid-cols-2 gap-3"
+      aria-label="Pantry ingredients"
+    >
       <li
         v-for="entry in pantry.entries"
         :key="entry.id"
@@ -169,25 +201,33 @@ const expiryLabel = (entry: PantryEntry): string => {
               type="text"
               class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-sm outline-none focus:border-culinary-primary"
               aria-label="Edit ingredient name"
-            />
+            >
             <input
               v-model="editQty"
               type="text"
               placeholder="Qty note"
               class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-sm outline-none focus:border-culinary-primary"
               aria-label="Edit quantity note"
-            />
+            >
             <input
               v-model="editExpiry"
               type="date"
               class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-sm outline-none focus:border-culinary-primary"
               aria-label="Edit expiry date"
-            />
+            >
           </div>
-          <button @click="saveEdit" class="p-2 rounded-xl text-emerald-600 hover:bg-emerald-500/10" aria-label="Save changes">
+          <button
+            class="p-2 rounded-xl text-emerald-600 hover:bg-emerald-500/10"
+            aria-label="Save changes"
+            @click="saveEdit"
+          >
             <Check :size="16" />
           </button>
-          <button @click="cancelEdit" class="p-2 rounded-xl text-slate-400 hover:bg-slate-500/10" aria-label="Cancel editing">
+          <button
+            class="p-2 rounded-xl text-slate-400 hover:bg-slate-500/10"
+            aria-label="Cancel editing"
+            @click="cancelEdit"
+          >
             <X :size="16" />
           </button>
         </template>
@@ -195,28 +235,35 @@ const expiryLabel = (entry: PantryEntry): string => {
           <div class="flex-1 min-w-0">
             <p class="font-bold text-sm truncate">
               {{ entry.name }}
-              <span v-if="entry.quantityNote" class="text-slate-400 font-medium ml-1">· {{ entry.quantityNote }}</span>
+              <span
+                v-if="entry.quantityNote"
+                class="text-slate-400 font-medium ml-1"
+              >· {{ entry.quantityNote }}</span>
             </p>
             <p
               v-if="expiryLabel(entry)"
               class="text-[11px] font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1"
               :class="isExpiringSoon(entry.expiresAt) ? 'text-amber-600 dark:text-amber-400' : 'text-slate-400'"
             >
-              <AlertTriangle v-if="isExpiringSoon(entry.expiresAt)" :size="12" aria-hidden="true" />
+              <AlertTriangle
+                v-if="isExpiringSoon(entry.expiresAt)"
+                :size="12"
+                aria-hidden="true"
+              />
               {{ expiryLabel(entry) }}
             </p>
           </div>
           <button
-            @click="startEdit(entry)"
             class="p-2 rounded-xl text-slate-400 hover:text-culinary-primary hover:bg-culinary-primary/10 transition-colors"
             :aria-label="`Edit ${entry.name}`"
+            @click="startEdit(entry)"
           >
             <Pencil :size="16" />
           </button>
           <button
-            @click="pantry.removeEntry(entry.id)"
             class="p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-colors"
             :aria-label="`Remove ${entry.name} from pantry`"
+            @click="pantry.removeEntry(entry.id)"
           >
             <Trash2 :size="16" />
           </button>

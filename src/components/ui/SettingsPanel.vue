@@ -52,10 +52,12 @@ function onResetStats() {
       >
         <div class="p-8">
           <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-display font-black dark:text-white">Settings</h2>
+            <h2 class="text-2xl font-display font-black dark:text-white">
+              Settings
+            </h2>
             <button
-              @click="close"
               class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              @click="close"
             >
               <span class="text-xl dark:text-white">✕</span>
             </button>
@@ -63,18 +65,20 @@ function onResetStats() {
 
           <div class="space-y-6">
             <div class="space-y-3">
-              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400">Theme</h3>
+              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                Theme
+              </h3>
               <div class="flex gap-2">
                 <button
                   v-for="mode in themeModes"
                   :key="mode.value"
-                  @click="onSetTheme(mode.value)"
                   :class="
                     settingsStore.theme === mode.value
                       ? 'bg-culinary-primary text-white'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                   "
                   class="flex-1 px-3 py-2 rounded-xl font-medium transition-all"
+                  @click="onSetTheme(mode.value)"
                 >
                   {{ mode.label }}
                 </button>
@@ -86,8 +90,8 @@ function onResetStats() {
                 Sound Effects
               </h3>
               <button
-                @click="onToggleSound"
                 class="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl"
+                @click="onToggleSound"
               >
                 <span class="font-medium dark:text-white">Enable Sound</span>
                 <span
@@ -99,36 +103,46 @@ function onResetStats() {
             </div>
 
             <div class="space-y-3">
-              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400">Statistics</h3>
+              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                Statistics
+              </h3>
               <div class="grid grid-cols-2 gap-3">
                 <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-center">
                   <div class="text-2xl font-black text-culinary-primary">
                     {{ statsStore.totalSearches }}
                   </div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400">Searches</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400">
+                    Searches
+                  </div>
                 </div>
                 <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-center">
                   <div class="text-2xl font-black text-culinary-secondary">
                     {{ statsStore.totalRecipesViewed }}
                   </div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400">Recipes Viewed</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400">
+                    Recipes Viewed
+                  </div>
                 </div>
                 <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-center">
                   <div class="text-2xl font-black text-culinary-primary">
                     {{ statsStore.formatTime() }}
                   </div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400">Time Spent</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400">
+                    Time Spent
+                  </div>
                 </div>
                 <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-center">
                   <div class="text-2xl font-black text-culinary-secondary">
                     {{ statsStore.totalFavorites }}
                   </div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400">Favorites</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400">
+                    Favorites
+                  </div>
                 </div>
               </div>
               <button
-                @click="onResetStats"
                 class="w-full p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors font-medium"
+                @click="onResetStats"
               >
                 Reset Statistics
               </button>
@@ -147,8 +161,7 @@ function onResetStats() {
                   <span class="dark:text-white">{{ shortcut.action }}</span>
                   <kbd
                     class="px-3 py-1 text-sm font-mono bg-slate-200 dark:bg-slate-700 rounded-lg dark:text-white"
-                    >{{ shortcut.key }}</kbd
-                  >
+                  >{{ shortcut.key }}</kbd>
                 </div>
               </div>
             </div>

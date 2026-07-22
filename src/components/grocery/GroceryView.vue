@@ -65,38 +65,48 @@ const downloadJson = () => {
 </script>
 
 <template>
-  <section class="glass rounded-[2rem] p-8 space-y-8" aria-labelledby="grocery-heading">
+  <section
+    class="glass rounded-[2rem] p-8 space-y-8"
+    aria-labelledby="grocery-heading"
+  >
     <div class="flex flex-wrap items-center justify-between gap-4">
-      <h3 id="grocery-heading" class="text-2xl font-display font-bold">
+      <h3
+        id="grocery-heading"
+        class="text-2xl font-display font-bold"
+      >
         Grocery List
         <span class="text-sm font-bold text-slate-400 ml-2">{{ grocery.remainingCount }} to buy</span>
       </h3>
-      <div class="flex flex-wrap gap-2" role="group" aria-label="Grocery list actions">
+      <div
+        class="flex flex-wrap gap-2"
+        role="group"
+        aria-label="Grocery list actions"
+      >
         <button
-          @click="copyList"
           :disabled="grocery.items.length === 0"
           class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary disabled:opacity-40 transition-all"
+          @click="copyList"
         >
           <ClipboardCopy :size="14" /> {{ copyFeedback ? 'Copied!' : 'Copy' }}
         </button>
         <button
-          @click="downloadTxt"
           :disabled="grocery.items.length === 0"
           class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary disabled:opacity-40 transition-all"
+          @click="downloadTxt"
         >
           <FileDown :size="14" /> .txt
         </button>
         <button
-          @click="downloadJson"
           :disabled="grocery.items.length === 0"
           class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary disabled:opacity-40 transition-all"
+          @click="downloadJson"
         >
           <FileJson :size="14" /> .json
         </button>
         <button
-          @click="grocery.clearCompleted"
           :disabled="grocery.completedCount === 0"
           class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-red-400 hover:text-red-500 disabled:opacity-40 transition-all"
+          @click="grocery.clearCompleted"
         >
           <Trash2 :size="14" /> Clear done
         </button>
@@ -104,21 +114,24 @@ const downloadJson = () => {
     </div>
 
     <!-- Manual add -->
-    <form class="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-3" @submit.prevent="addManual">
+    <form
+      class="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-3"
+      @submit.prevent="addManual"
+    >
       <input
         v-model="nameInput"
         type="text"
         placeholder="Add an item, e.g. Olive Oil"
         class="bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-3 text-sm outline-none focus:border-culinary-primary transition-all"
         aria-label="Grocery item name"
-      />
+      >
       <input
         v-model="qtyInput"
         type="text"
         placeholder="Qty note (optional)"
         class="bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-3 text-sm outline-none focus:border-culinary-primary transition-all"
         aria-label="Quantity note"
-      />
+      >
       <button
         type="submit"
         class="flex items-center justify-center gap-2 bg-culinary-primary hover:bg-culinary-secondary text-white px-6 py-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95"
@@ -133,8 +146,14 @@ const downloadJson = () => {
       v-if="grocery.items.length === 0"
       class="text-center py-14 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl"
     >
-      <ShoppingCart class="mx-auto text-slate-300 mb-4" :size="48" aria-hidden="true" />
-      <p class="text-slate-500 font-medium">Your grocery list is empty.</p>
+      <ShoppingCart
+        class="mx-auto text-slate-300 mb-4"
+        :size="48"
+        aria-hidden="true"
+      />
+      <p class="text-slate-500 font-medium">
+        Your grocery list is empty.
+      </p>
       <p class="text-xs text-slate-400 mt-1">
         Add items above, or open a recipe and send its missing ingredients here. Works offline —
         everything stays on this device.
@@ -142,7 +161,11 @@ const downloadJson = () => {
     </div>
 
     <!-- Items -->
-    <ul v-else class="space-y-2" aria-label="Grocery items">
+    <ul
+      v-else
+      class="space-y-2"
+      aria-label="Grocery items"
+    >
       <li
         v-for="item in grocery.items"
         :key="item.id"
@@ -155,19 +178,27 @@ const downloadJson = () => {
               type="text"
               class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-sm outline-none focus:border-culinary-primary"
               aria-label="Edit item name"
-            />
+            >
             <input
               v-model="editQty"
               type="text"
               placeholder="Qty note"
               class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-sm outline-none focus:border-culinary-primary"
               aria-label="Edit quantity note"
-            />
+            >
           </div>
-          <button @click="saveEdit" class="p-2 rounded-xl text-emerald-600 hover:bg-emerald-500/10" aria-label="Save changes">
+          <button
+            class="p-2 rounded-xl text-emerald-600 hover:bg-emerald-500/10"
+            aria-label="Save changes"
+            @click="saveEdit"
+          >
             <Check :size="16" />
           </button>
-          <button @click="editingId = null" class="p-2 rounded-xl text-slate-400 hover:bg-slate-500/10" aria-label="Cancel editing">
+          <button
+            class="p-2 rounded-xl text-slate-400 hover:bg-slate-500/10"
+            aria-label="Cancel editing"
+            @click="editingId = null"
+          >
             <X :size="16" />
           </button>
         </template>
@@ -175,30 +206,39 @@ const downloadJson = () => {
           <input
             type="checkbox"
             :checked="item.checked"
-            @change="grocery.toggleChecked(item.id)"
             class="w-4 h-4 rounded accent-[#f59e0b] shrink-0"
             :aria-label="`Mark ${item.name} as ${item.checked ? 'not bought' : 'bought'}`"
-          />
+            @change="grocery.toggleChecked(item.id)"
+          >
           <div class="flex-1 min-w-0">
-            <p class="font-bold text-sm truncate" :class="{ 'line-through text-slate-400': item.checked }">
+            <p
+              class="font-bold text-sm truncate"
+              :class="{ 'line-through text-slate-400': item.checked }"
+            >
               {{ item.name }}
-              <span v-if="item.qtyNote" class="text-slate-400 font-medium ml-1">· {{ item.qtyNote }}</span>
+              <span
+                v-if="item.qtyNote"
+                class="text-slate-400 font-medium ml-1"
+              >· {{ item.qtyNote }}</span>
             </p>
-            <p v-if="item.recipeOrigin" class="text-[11px] text-slate-400 font-medium truncate">
+            <p
+              v-if="item.recipeOrigin"
+              class="text-[11px] text-slate-400 font-medium truncate"
+            >
               for: {{ item.recipeOrigin }}
             </p>
           </div>
           <button
-            @click="startEdit(item)"
             class="p-2 rounded-xl text-slate-400 hover:text-culinary-primary hover:bg-culinary-primary/10 transition-colors"
             :aria-label="`Edit ${item.name}`"
+            @click="startEdit(item)"
           >
             <Pencil :size="16" />
           </button>
           <button
-            @click="grocery.removeItem(item.id)"
             class="p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-colors"
             :aria-label="`Delete ${item.name}`"
+            @click="grocery.removeItem(item.id)"
           >
             <Trash2 :size="16" />
           </button>
