@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import type { Recipe } from '@/types/recipe'
 import { extractIngredients, lookupRecipe } from '@/utils/mealdb'
 import { scaleMeasure } from '@/utils/scaling'
+import { safeExternalUrl } from '@/utils/url'
 import { useGroceryStore } from '@/stores/groceryStore'
 import {
   ExternalLink,
@@ -46,8 +47,10 @@ const uncheckedCount = computed(
   () => ingredients.value.filter(item => !haveIngredient.value[item.name]).length
 )
 
-const sourceUrl = computed(() => (recipe.value?.strSource as string | undefined) || '')
-const youtubeUrl = computed(() => recipe.value?.strYoutube || '')
+// MS-S2: upstream URLs pass a scheme allowlist (http/https only); anything
+// else yields '' and the corresponding link is not rendered.
+const sourceUrl = computed(() => safeExternalUrl(recipe.value?.strSource))
+const youtubeUrl = computed(() => safeExternalUrl(recipe.value?.strYoutube))
 
 watch(
   () => props.recipeId,
