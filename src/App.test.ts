@@ -43,7 +43,9 @@ describe('MK MealScout Recipe Finder', () => {
 
   it('has proper ARIA labels for accessibility', () => {
     render(App)
-    expect(screen.getByRole('application', { name: /MK MealScout Recipe Finder/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('application', { name: /MK MealScout Recipe Finder/i })
+    ).toBeInTheDocument()
     expect(screen.getByRole('main')).toBeInTheDocument()
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
