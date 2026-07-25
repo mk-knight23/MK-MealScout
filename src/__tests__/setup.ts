@@ -6,7 +6,7 @@ import { createPinia, setActivePinia } from 'pinia'
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -16,7 +16,7 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-});
+})
 
 // Setup Pinia: a fresh instance per test, installed BOTH as the active pinia
 // (for stores used in test bodies) and as a global plugin (for stores used
@@ -29,4 +29,3 @@ beforeEach(() => {
 })
 
 afterEach(() => cleanup())
-

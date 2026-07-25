@@ -167,9 +167,9 @@ describe('useKeyboardControls (shortcut handling)', () => {
 
   it('advertises only shortcuts with real handlers (no Ctrl+S / Ctrl+F fake controls)', () => {
     const wrapper = mountHost()
-    const advertised = wrapper.vm.getShortcuts().map(shortcut => shortcut.key)
+    const advertised = wrapper.vm.getShortcuts().map((shortcut) => shortcut.key)
 
-    expect(advertised.some(key => /ctrl|cmd|meta/i.test(key))).toBe(false)
+    expect(advertised.some((key) => /ctrl|cmd|meta/i.test(key))).toBe(false)
     expect(advertised).toContain('Escape')
     expect(advertised).toContain('H')
     expect(advertised).toContain('?')
