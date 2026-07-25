@@ -3,10 +3,12 @@ import { ref, watch } from 'vue'
 
 export type ThemeMode = 'dark' | 'light' | 'system'
 
+// Note: a `reducedMotion` flag used to live here but had no UI toggle and no
+// consumer (placebo state). Reduced motion is now honoured for real via the
+// prefers-reduced-motion media query in style.css.
 interface Settings {
   soundEnabled: boolean
   theme: ThemeMode
-  reducedMotion: boolean
   showHelp: boolean
 }
 
@@ -15,7 +17,6 @@ const STORAGE_KEY = 'culinara-settings'
 const defaultSettings: Settings = {
   soundEnabled: true,
   theme: 'dark',
-  reducedMotion: false,
   showHelp: false,
 }
 
@@ -35,7 +36,6 @@ export const useSettingsStore = defineStore('settings', () => {
   const savedSettings = loadSettings()
   const soundEnabled = ref(savedSettings.soundEnabled)
   const theme = ref<ThemeMode>(savedSettings.theme)
-  const reducedMotion = ref(savedSettings.reducedMotion)
   const showHelp = ref(defaultSettings.showHelp)
   const isDarkMode = ref(true)
 
@@ -69,10 +69,6 @@ export const useSettingsStore = defineStore('settings', () => {
     showHelp.value = !showHelp.value
   }
 
-  function setReducedMotion(value: boolean): void {
-    reducedMotion.value = value
-  }
-
   function saveSettings(): void {
     try {
       localStorage.setItem(
@@ -80,7 +76,6 @@ export const useSettingsStore = defineStore('settings', () => {
         JSON.stringify({
           soundEnabled: soundEnabled.value,
           theme: theme.value,
-          reducedMotion: reducedMotion.value,
         })
       )
     } catch {
@@ -88,7 +83,7 @@ export const useSettingsStore = defineStore('settings', () => {
     }
   }
 
-  watch([soundEnabled, theme, reducedMotion], () => {
+  watch([soundEnabled, theme], () => {
     saveSettings()
   })
 
@@ -100,13 +95,11 @@ export const useSettingsStore = defineStore('settings', () => {
   return {
     soundEnabled,
     theme,
-    reducedMotion,
     showHelp,
     isDarkMode,
     toggleSound,
     setTheme,
     toggleHelp,
-    setReducedMotion,
     applyTheme,
   }
 })

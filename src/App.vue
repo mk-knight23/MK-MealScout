@@ -99,8 +99,6 @@ const onSearch = () => {
   <div
     class="min-h-screen transition-colors duration-500"
     :class="{ dark: settingsStore.isDarkMode, light: !settingsStore.isDarkMode }"
-    role="application"
-    aria-label="MK MealScout Recipe Finder"
   >
     <!-- Header -->
     <header

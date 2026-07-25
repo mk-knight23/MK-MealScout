@@ -42,11 +42,12 @@ describe('MK MealScout Recipe Finder', () => {
     expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument()
   })
 
-  it('has proper ARIA labels for accessibility', () => {
+  it('has proper ARIA landmarks for accessibility', () => {
     render(App)
-    expect(
-      screen.getByRole('application', { name: /MK MealScout Recipe Finder/i })
-    ).toBeInTheDocument()
+    // role="application" was removed: it disabled screen-reader document
+    // navigation for what is an ordinary document-style page.
+    expect(screen.queryByRole('application')).not.toBeInTheDocument()
+    expect(screen.getByRole('banner')).toBeInTheDocument()
     expect(screen.getByRole('main')).toBeInTheDocument()
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
