@@ -4,7 +4,6 @@
   "version": "2.1.0",
   "type": "module",
   "scripts": {
-    "production": "npm run build && npm start",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -17,7 +16,6 @@
     "typecheck": "vue-tsc -b && vite build"
   },
   "dependencies": {
-    "@vueuse/core": "^14.1.0",
     "lucide-vue-next": "^0.563.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.24",

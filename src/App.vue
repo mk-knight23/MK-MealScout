@@ -49,14 +49,13 @@ const NAV_ITEMS: { view: AppView; label: string }[] = [
 
 onMounted(() => {
   store.fetchCategories()
+  // Initial catalogue load — deliberately NOT counted as a user search.
   store.searchRecipes('')
-  statsStore.recordSearch()
 })
 
+// useKeyboardControls already toggles help itself — toggling it here as well
+// would cancel the shortcut out. App only reacts to 'close' for its own modal.
 watchEffect(() => {
-  if (lastAction.value === 'help') {
-    settingsStore.toggleHelp()
-  }
   if (lastAction.value === 'close' && selectedRecipeId.value) {
     selectedRecipeId.value = null
   }
@@ -100,8 +99,6 @@ const onSearch = () => {
   <div
     class="min-h-screen transition-colors duration-500"
     :class="{ dark: settingsStore.isDarkMode, light: !settingsStore.isDarkMode }"
-    role="application"
-    aria-label="MK MealScout Recipe Finder"
   >
     <!-- Header -->
     <header
@@ -436,7 +433,7 @@ const onSearch = () => {
             <span class="font-display font-bold text-xl tracking-tighter">MK MealScout</span>
           </div>
           <p class="text-slate-500 text-sm leading-relaxed">
-            The ultimate workspace for culinary exploration and digital meal planning.
+            The ultimate workspace for culinary exploration and pantry-first cooking.
           </p>
         </div>
         <div>
@@ -444,15 +441,9 @@ const onSearch = () => {
             Discover
           </h4>
           <ul class="space-y-4 text-sm font-bold text-slate-500">
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Trending Recipes
-            </li>
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Global Cuisines
-            </li>
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Healthy Options
-            </li>
+            <li>Trending Recipes</li>
+            <li>Global Cuisines</li>
+            <li>Healthy Options</li>
           </ul>
         </div>
         <div>
@@ -460,15 +451,9 @@ const onSearch = () => {
             Platform
           </h4>
           <ul class="space-y-4 text-sm font-bold text-slate-500">
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Saved Collections
-            </li>
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Meal Planner
-            </li>
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Grocery Integrator
-            </li>
+            <li>Saved Collections</li>
+            <li>Pantry Matching</li>
+            <li>Grocery Lists</li>
           </ul>
         </div>
       </div>
@@ -481,11 +466,11 @@ const onSearch = () => {
             target="_blank"
             rel="noopener noreferrer"
             class="hover:text-culinary-primary transition-colors underline"
-          >Kazi Musharraf — Kazi Developer</a>. All rights reserved.
+          >Kazi Musharraf</a>. All rights reserved.
         </p>
         <div class="flex gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
           <a
-            href="https://github.com/mk-knight23/17-web-culinary-discovery"
+            href="https://github.com/mk-knight23/MK-MealScout"
             target="_blank"
             rel="noopener noreferrer"
             class="hover:text-culinary-primary transition-colors"

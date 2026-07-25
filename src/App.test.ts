@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import '@testing-library/jest-dom'
 import { createPinia, setActivePinia } from 'pinia'
 import App from './App.vue'
+import { useStatsStore } from './stores/stats'
 
 // Mock fetch
 const mockFetch = vi.fn()
@@ -41,9 +42,12 @@ describe('MK MealScout Recipe Finder', () => {
     expect(screen.getByRole('button', { name: /^Search$/i })).toBeInTheDocument()
   })
 
-  it('has proper ARIA labels for accessibility', () => {
+  it('has proper ARIA landmarks for accessibility', () => {
     render(App)
-    expect(screen.getByRole('application', { name: /MK MealScout Recipe Finder/i })).toBeInTheDocument()
+    // role="application" was removed: it disabled screen-reader document
+    // navigation for what is an ordinary document-style page.
+    expect(screen.queryByRole('application')).not.toBeInTheDocument()
+    expect(screen.getByRole('banner')).toBeInTheDocument()
     expect(screen.getByRole('main')).toBeInTheDocument()
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
@@ -65,5 +69,49 @@ describe('MK MealScout Recipe Finder', () => {
     // The old bug shipped the literal string "{{ store.favorites.length }} saved recipes".
     expect(status).toHaveAccessibleName('0 saved recipes')
     expect(status.getAttribute('aria-label')).not.toContain('{{')
+  })
+
+  it('opens the settings dialog when "h" is pressed (shortcut wired end-to-end)', async () => {
+    render(App)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    // Old bugs: (1) actionMap used e.code names so "h" never matched e.key;
+    // (2) App.vue's watchEffect toggled help a second time, cancelling the toggle.
+    await fireEvent(window, new KeyboardEvent('keydown', { key: 'h', cancelable: true }))
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+  })
+
+  it('closes the settings dialog with Escape', async () => {
+    render(App)
+    await fireEvent(window, new KeyboardEvent('keydown', { key: 'h', cancelable: true }))
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+
+    await fireEvent(window, new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('does not count the page load as a search — only real searches', async () => {
+    render(App)
+    const stats = useStatsStore()
+    expect(stats.totalSearches).toBe(0)
+
+    await fireEvent.click(screen.getByRole('button', { name: /^Search$/i }))
+
+    expect(stats.totalSearches).toBe(1)
+  })
+
+  it('shows only stats that are actually tracked (no fake Time Spent / Favorites tiles)', async () => {
+    render(App)
+    await fireEvent(window, new KeyboardEvent('keydown', { key: 'h', cancelable: true }))
+    const dialog = await screen.findByRole('dialog')
+
+    expect(dialog).toHaveTextContent('Searches')
+    expect(dialog).toHaveTextContent('Recipes Viewed')
+    // addTimeSpent/updateFavorites were never called anywhere — these tiles
+    // could only ever display zero, so they must not be advertised.
+    expect(dialog.textContent).not.toContain('Time Spent')
+    expect(dialog.textContent).not.toContain('Favorites')
   })
 })

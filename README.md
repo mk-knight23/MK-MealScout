@@ -10,16 +10,17 @@ MK MealScout lets you enter the ingredients already in your kitchen and see what
 
 - Recipe search by name, category, and ingredient via TheMealDB.
 - Categorized browse with graceful degradation when the API is slow or unavailable.
-- Favorites persisted locally to `localStorage`. Nothing is stored server-side.
+- Pantry manager (`src/components/pantry/`, `src/utils/pantry.ts`): track what you have, with optional quantity notes and expiry dates plus "expiring soon" highlighting.
+- Ingredient-first cook matches (`src/utils/matching.ts`): recipes scored and ranked by how many of your pantry ingredients they use.
+- Grocery list (`src/components/grocery/`, `src/utils/grocery.ts`): case-insensitive item consolidation, recipe origins, check-off, and plain-text export.
+- Favorites, pantry, and grocery list persisted locally to `localStorage`. Nothing is stored server-side.
 - Recipe scaling + unit conversion (`src/utils/scaling.ts`) with 23 unit tests covering fractions, ranges, unicode fractions, volume, and mass.
 - Centralized API client with 12s timeout, `AbortController` cancellation, and typed errors (`src/utils/mealdb.ts`).
 - Analytics: nothing loads unless `VITE_GTM_ID` or `VITE_GA4_ID` is set at build time, or Vercel Analytics is enabled in the dashboard. See [docs/ANALYTICS.md](docs/ANALYTICS.md).
 
 Not shipped yet, on the roadmap:
 
-- Pantry manager with expiration tracking.
 - Meal planner + drag-drop weekly schedule.
-- Grocery-list generator with unit consolidation.
 - AI recipe generation (env placeholders exist; no LLM calls wired).
 
 ## Tech stack
@@ -60,8 +61,13 @@ src/
   App.vue
   main.ts
   stores/recipeStore.ts     # Pinia store, exposes errorCode/errorMessage
+  stores/pantryStore.ts     # pantry entries, expiry state
+  stores/groceryStore.ts    # grocery items, consolidation
   utils/mealdb.ts           # timeout + abort + typed errors
   utils/scaling.ts          # parseMeasure / scaleMeasure / convertVolume / convertMass
+  utils/pantry.ts           # pantry schema, persistence parsing, expiry helpers
+  utils/matching.ts         # ingredient-first match scoring
+  utils/grocery.ts          # grocery schema, consolidation, export
   types/recipe.ts
   components/
 ```

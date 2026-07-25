@@ -98,3 +98,17 @@ body::after {
   box-shadow: 0 16px 48px rgba(245, 158, 11, 0.1);
   transform: translateY(-4px);
 }
+
+/* Real reduced-motion support: honour the OS-level preference globally.
+   (The old settings-store `reducedMotion` flag was dead state with no UI
+   toggle and no consumer — removed in favour of this.) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
