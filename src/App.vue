@@ -468,11 +468,11 @@ const onSearch = () => {
             target="_blank"
             rel="noopener noreferrer"
             class="hover:text-culinary-primary transition-colors underline"
-          >Kazi Musharraf — Kazi Developer</a>. All rights reserved.
+          >Kazi Musharraf</a>. All rights reserved.
         </p>
         <div class="flex gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
           <a
-            href="https://github.com/mk-knight23/17-web-culinary-discovery"
+            href="https://github.com/mk-knight23/MK-MealScout"
             target="_blank"
             rel="noopener noreferrer"
             class="hover:text-culinary-primary transition-colors"
