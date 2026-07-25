@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/vue'
 import '@testing-library/jest-dom'
 import { createPinia, setActivePinia } from 'pinia'
 import App from './App.vue'
+import { useStatsStore } from './stores/stats'
 
 // Mock fetch
 const mockFetch = vi.fn()
@@ -88,5 +89,28 @@ describe('MK MealScout Recipe Finder', () => {
     await fireEvent(window, new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }))
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('does not count the page load as a search — only real searches', async () => {
+    render(App)
+    const stats = useStatsStore()
+    expect(stats.totalSearches).toBe(0)
+
+    await fireEvent.click(screen.getByRole('button', { name: /^Search$/i }))
+
+    expect(stats.totalSearches).toBe(1)
+  })
+
+  it('shows only stats that are actually tracked (no fake Time Spent / Favorites tiles)', async () => {
+    render(App)
+    await fireEvent(window, new KeyboardEvent('keydown', { key: 'h', cancelable: true }))
+    const dialog = await screen.findByRole('dialog')
+
+    expect(dialog).toHaveTextContent('Searches')
+    expect(dialog).toHaveTextContent('Recipes Viewed')
+    // addTimeSpent/updateFavorites were never called anywhere — these tiles
+    // could only ever display zero, so they must not be advertised.
+    expect(dialog.textContent).not.toContain('Time Spent')
+    expect(dialog.textContent).not.toContain('Favorites')
   })
 })

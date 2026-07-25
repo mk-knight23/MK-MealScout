@@ -185,22 +185,6 @@ function onResetStats() {
                     Recipes Viewed
                   </div>
                 </div>
-                <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-center">
-                  <div class="text-2xl font-black text-culinary-primary">
-                    {{ statsStore.formatTime() }}
-                  </div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400">
-                    Time Spent
-                  </div>
-                </div>
-                <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-center">
-                  <div class="text-2xl font-black text-culinary-secondary">
-                    {{ statsStore.totalFavorites }}
-                  </div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400">
-                    Favorites
-                  </div>
-                </div>
               </div>
               <button
                 class="w-full p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors font-medium"

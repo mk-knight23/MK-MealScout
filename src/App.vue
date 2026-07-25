@@ -49,8 +49,8 @@ const NAV_ITEMS: { view: AppView; label: string }[] = [
 
 onMounted(() => {
   store.fetchCategories()
+  // Initial catalogue load — deliberately NOT counted as a user search.
   store.searchRecipes('')
-  statsStore.recordSearch()
 })
 
 // useKeyboardControls already toggles help itself — toggling it here as well

@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
+// Only stats that are actually written by the app live here. The old
+// totalFavorites/totalTimeSpent fields had writers that were never called,
+// so their displays could only ever show zero — removed (truth over decor).
 interface Stats {
   totalSearches: number
   totalRecipesViewed: number
-  totalFavorites: number
   lastVisit: string | null
-  totalTimeSpent: number
 }
 
 const STORAGE_KEY = 'culinara-stats'
@@ -14,16 +15,19 @@ const STORAGE_KEY = 'culinara-stats'
 const defaultStats: Stats = {
   totalSearches: 0,
   totalRecipesViewed: 0,
-  totalFavorites: 0,
   lastVisit: null,
-  totalTimeSpent: 0,
 }
 
 function loadStats(): Stats {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
-      return { ...defaultStats, ...JSON.parse(stored) }
+      const parsed = JSON.parse(stored) as Partial<Stats>
+      return {
+        totalSearches: parsed.totalSearches ?? defaultStats.totalSearches,
+        totalRecipesViewed: parsed.totalRecipesViewed ?? defaultStats.totalRecipesViewed,
+        lastVisit: parsed.lastVisit ?? defaultStats.lastVisit,
+      }
     }
   } catch {
     // Silently handle error
@@ -35,9 +39,7 @@ export const useStatsStore = defineStore('stats', () => {
   const savedStats = loadStats()
   const totalSearches = ref(savedStats.totalSearches)
   const totalRecipesViewed = ref(savedStats.totalRecipesViewed)
-  const totalFavorites = ref(savedStats.totalFavorites)
   const lastVisit = ref<string | null>(savedStats.lastVisit)
-  const totalTimeSpent = ref(savedStats.totalTimeSpent)
 
   function recordSearch(): void {
     totalSearches.value++
@@ -50,31 +52,11 @@ export const useStatsStore = defineStore('stats', () => {
     saveStats()
   }
 
-  function updateFavorites(count: number): void {
-    totalFavorites.value = count
-    saveStats()
-  }
-
-  function addTimeSpent(seconds: number): void {
-    totalTimeSpent.value += seconds
-    saveStats()
-  }
-
   function resetStats(): void {
     totalSearches.value = 0
     totalRecipesViewed.value = 0
-    totalFavorites.value = 0
     lastVisit.value = null
-    totalTimeSpent.value = 0
     saveStats()
-  }
-
-  function formatTime(): string {
-    const seconds = totalTimeSpent.value
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    if (hours > 0) return `${hours}h ${minutes}m`
-    return `${minutes}m`
   }
 
   function saveStats(): void {
@@ -84,9 +66,7 @@ export const useStatsStore = defineStore('stats', () => {
         JSON.stringify({
           totalSearches: totalSearches.value,
           totalRecipesViewed: totalRecipesViewed.value,
-          totalFavorites: totalFavorites.value,
           lastVisit: lastVisit.value,
-          totalTimeSpent: totalTimeSpent.value,
         })
       )
     } catch {
@@ -97,14 +77,9 @@ export const useStatsStore = defineStore('stats', () => {
   return {
     totalSearches,
     totalRecipesViewed,
-    totalFavorites,
     lastVisit,
-    totalTimeSpent,
     recordSearch,
     recordRecipeView,
-    updateFavorites,
-    addTimeSpent,
     resetStats,
-    formatTime,
   }
 })
