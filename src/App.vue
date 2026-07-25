@@ -435,7 +435,7 @@ const onSearch = () => {
             <span class="font-display font-bold text-xl tracking-tighter">MK MealScout</span>
           </div>
           <p class="text-slate-500 text-sm leading-relaxed">
-            The ultimate workspace for culinary exploration and digital meal planning.
+            The ultimate workspace for culinary exploration and pantry-first cooking.
           </p>
         </div>
         <div>
@@ -443,15 +443,9 @@ const onSearch = () => {
             Discover
           </h4>
           <ul class="space-y-4 text-sm font-bold text-slate-500">
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Trending Recipes
-            </li>
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Global Cuisines
-            </li>
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Healthy Options
-            </li>
+            <li>Trending Recipes</li>
+            <li>Global Cuisines</li>
+            <li>Healthy Options</li>
           </ul>
         </div>
         <div>
@@ -459,15 +453,9 @@ const onSearch = () => {
             Platform
           </h4>
           <ul class="space-y-4 text-sm font-bold text-slate-500">
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Saved Collections
-            </li>
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Meal Planner
-            </li>
-            <li class="hover:text-culinary-primary cursor-pointer transition-colors">
-              Grocery Integrator
-            </li>
+            <li>Saved Collections</li>
+            <li>Pantry Matching</li>
+            <li>Grocery Lists</li>
           </ul>
         </div>
       </div>
