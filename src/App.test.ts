@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import '@testing-library/jest-dom'
 import { createPinia, setActivePinia } from 'pinia'
 import App from './App.vue'
@@ -67,5 +67,26 @@ describe('MK MealScout Recipe Finder', () => {
     // The old bug shipped the literal string "{{ store.favorites.length }} saved recipes".
     expect(status).toHaveAccessibleName('0 saved recipes')
     expect(status.getAttribute('aria-label')).not.toContain('{{')
+  })
+
+  it('opens the settings dialog when "h" is pressed (shortcut wired end-to-end)', async () => {
+    render(App)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    // Old bugs: (1) actionMap used e.code names so "h" never matched e.key;
+    // (2) App.vue's watchEffect toggled help a second time, cancelling the toggle.
+    await fireEvent(window, new KeyboardEvent('keydown', { key: 'h', cancelable: true }))
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+  })
+
+  it('closes the settings dialog with Escape', async () => {
+    render(App)
+    await fireEvent(window, new KeyboardEvent('keydown', { key: 'h', cancelable: true }))
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+
+    await fireEvent(window, new KeyboardEvent('keydown', { key: 'Escape', cancelable: true }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 })

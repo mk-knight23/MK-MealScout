@@ -2,7 +2,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useSettingsStore } from '../stores/settings'
 import { KEYBOARD_SHORTCUTS } from '../utils/constants'
 
-type KeyAction = 'save' | 'search' | 'close' | 'help' | 'none'
+type KeyAction = 'close' | 'help' | 'none'
 
 /**
  * True when the event originated from a field the user is typing into
@@ -21,11 +21,12 @@ export function useKeyboardControls() {
   const settingsStore = useSettingsStore()
   const lastAction = ref<KeyAction>('none')
 
+  // Keyed by KeyboardEvent.key (single characters normalised to lowercase).
+  // Only shortcuts with real handlers live here — save/search were advertised
+  // but never handled anywhere, so they were removed rather than faked.
   const actionMap: Record<string, KeyAction> = {
-    KeyS: 'save',
-    KeyF: 'search',
     Escape: 'close',
-    KeyH: 'help',
+    h: 'help',
     '/': 'help',
     '?': 'help',
   }
@@ -35,15 +36,8 @@ export function useKeyboardControls() {
     // through so it can still close an open modal from within an input.
     if (e.key !== 'Escape' && isEditableTarget(e.target)) return
 
-    const action = actionMap[e.key] || 'none'
-
-    if (e.ctrlKey || e.metaKey) {
-      if (action === 'save' || action === 'search') {
-        e.preventDefault()
-        lastAction.value = action
-        return
-      }
-    }
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key
+    const action = actionMap[key] || 'none'
 
     if (action === 'close' && settingsStore.showHelp) {
       e.preventDefault()

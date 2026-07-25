@@ -53,10 +53,9 @@ onMounted(() => {
   statsStore.recordSearch()
 })
 
+// useKeyboardControls already toggles help itself — toggling it here as well
+// would cancel the shortcut out. App only reacts to 'close' for its own modal.
 watchEffect(() => {
-  if (lastAction.value === 'help') {
-    settingsStore.toggleHelp()
-  }
   if (lastAction.value === 'close' && selectedRecipeId.value) {
     selectedRecipeId.value = null
   }

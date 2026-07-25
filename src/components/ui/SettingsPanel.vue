@@ -3,12 +3,13 @@ import { nextTick, ref, watch } from 'vue'
 import { useSettingsStore, type ThemeMode } from '../../stores/settings'
 import { useStatsStore } from '../../stores/stats'
 import { useAudio } from '../../composables/useAudio'
-import { useKeyboardControls } from '../../composables/useKeyboardControls'
+// Import the shortcut list directly — calling useKeyboardControls() here would
+// register a second global keydown listener whose toggleHelp cancels App's.
+import { KEYBOARD_SHORTCUTS } from '../../utils/constants'
 
 const settingsStore = useSettingsStore()
 const statsStore = useStatsStore()
 const audio = useAudio()
-const { getShortcuts } = useKeyboardControls()
 
 const dialogRef = ref<HTMLElement | null>(null)
 const closeButtonRef = ref<HTMLElement | null>(null)
@@ -215,7 +216,7 @@ function onResetStats() {
               </h3>
               <div class="space-y-2">
                 <div
-                  v-for="shortcut in getShortcuts()"
+                  v-for="shortcut in KEYBOARD_SHORTCUTS"
                   :key="shortcut.key"
                   class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl"
                 >
