@@ -1,5 +1,8 @@
 // Grocery list domain logic: item schema, schema-guarded persistence parsing,
-// case-insensitive consolidation, and export formatting. Pure logic, no DOM.
+// case-insensitive + unit-aware consolidation, and export formatting.
+// Pure logic, no DOM.
+
+import { convertMass, convertVolume, formatQuantity, formatUnit, parseMeasure } from './scaling'
 
 export interface GroceryItem {
   id: string
@@ -76,11 +79,40 @@ export function serializeGrocery(items: GroceryItem[]): string {
   return JSON.stringify(file)
 }
 
+/**
+ * True unit consolidation: when both notes are plain measures ("2 cups",
+ * "1 kg") of the same dimension, sum them in the existing note's unit.
+ * Returns null when numeric consolidation is not safely possible
+ * (missing/unknown units, mixed dimensions, or preparation suffixes like
+ * "1 cup chopped") — callers then fall back to a text merge.
+ */
+function tryConsolidateQuantities(existingNote: string, incomingNote: string): string | null {
+  const a = parseMeasure(existingNote)
+  const b = parseMeasure(incomingNote)
+  if (a.quantity === null || b.quantity === null) return null
+  if (a.suffix || b.suffix) return null
+  if (!a.unit || !b.unit) return null
+
+  let total: number
+  if (a.unit === b.unit) {
+    total = a.quantity + b.quantity
+  } else {
+    const asVolume = convertVolume(b.quantity, b.unit, a.unit)
+    const converted = asVolume !== null ? asVolume : convertMass(b.quantity, b.unit, a.unit)
+    if (converted === null) return null
+    total = a.quantity + converted
+  }
+  return `${formatQuantity(total)} ${formatUnit(a.unit, total)}`
+}
+
 function mergeNotes(existing: string, incoming: string): string {
   const a = existing.trim()
   const b = incoming.trim()
-  if (!b || a.toLowerCase() === b.toLowerCase()) return a
+  if (!b) return a
   if (!a) return b
+  const consolidated = tryConsolidateQuantities(a, b)
+  if (consolidated !== null) return consolidated
+  if (a.toLowerCase() === b.toLowerCase()) return a
   return `${a} + ${b}`
 }
 

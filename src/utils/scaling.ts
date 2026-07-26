@@ -175,6 +175,47 @@ const MASS_TO_G: Record<string, number> = {
   kg: 1000, kilogram: 1000, kilograms: 1000,
 }
 
+/**
+ * Singular/plural display forms for known units. Abbreviations (tbsp, g, kg…)
+ * are invariant; spelled-out units pluralise. Unknown units pass through.
+ */
+const UNIT_FORMS: Record<string, { one: string; many: string }> = (() => {
+  const forms: Record<string, { one: string; many: string }> = {}
+  const add = (one: string, many: string): void => {
+    forms[one] = { one, many }
+    forms[many] = { one, many }
+  }
+  add('cup', 'cups')
+  add('tablespoon', 'tablespoons')
+  add('teaspoon', 'teaspoons')
+  add('ounce', 'ounces')
+  add('pound', 'pounds')
+  add('gram', 'grams')
+  add('kilogram', 'kilograms')
+  add('milliliter', 'milliliters')
+  add('liter', 'liters')
+  add('litre', 'litres')
+  add('pinch', 'pinches')
+  add('dash', 'dashes')
+  add('clove', 'cloves')
+  add('can', 'cans')
+  add('slice', 'slices')
+  add('piece', 'pieces')
+  add('stick', 'sticks')
+  add('lb', 'lbs')
+  for (const unit of ['tbsp', 'tsp', 'oz', 'g', 'kg', 'ml', 'l']) {
+    forms[unit] = { one: unit, many: unit }
+  }
+  return forms
+})()
+
+/** Display form of a unit for a given quantity ("1 cup" vs "3 cups"). */
+export function formatUnit(unit: string, quantity: number): string {
+  const form = UNIT_FORMS[unit.toLowerCase()]
+  if (!form) return unit
+  return Math.abs(quantity) === 1 ? form.one : form.many
+}
+
 export function convertVolume(qty: number, from: string, to: string): number | null {
   const f = VOLUME_TO_ML[from]
   const t = VOLUME_TO_ML[to]
