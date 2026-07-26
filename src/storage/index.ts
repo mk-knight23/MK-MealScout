@@ -4,6 +4,8 @@ import { createLocalStorageStore } from './localStorageStore'
 import { createMemoryStore } from './memoryStore'
 
 export type { AsyncKeyValueStore, StorageKind } from './types'
+export { migrateV1LocalStorage, V1_LOCALSTORAGE_KEYS } from './migration'
+export type { MigrationReport } from './migration'
 
 export interface CreateStorageOptions {
   /** undefined = use the global; null = treat as unavailable (tests). */
