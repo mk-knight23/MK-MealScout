@@ -4,6 +4,7 @@ import { usePantryStore } from '@/stores/pantryStore'
 import { filterByIngredient } from '@/utils/mealdb'
 import type { IngredientResult, RecipeMatch } from '@/utils/matching'
 import { MAX_MATCH_INGREDIENTS, matchBadgeLabel, mergeIngredientMatches } from '@/utils/matching'
+import RecipeCard from '@/components/recipe/RecipeCard.vue'
 import { ChefHat, RefreshCw, Search, UtensilsCrossed } from 'lucide-vue-next'
 
 const emit = defineEmits<{ (e: 'open-recipe', id: string): void }>()
@@ -165,39 +166,20 @@ const findMatches = async () => {
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         aria-label="Recipe matches"
       >
-        <article
+        <RecipeCard
           v-for="match in matches"
           :key="match.recipe.idMeal"
-          class="recipe-card group cursor-pointer focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-culinary-primary"
-          role="button"
-          tabindex="0"
-          :aria-label="`View recipe details for ${match.recipe.strMeal}`"
-          @click="emit('open-recipe', match.recipe.idMeal)"
-          @keydown.enter.prevent="emit('open-recipe', match.recipe.idMeal)"
-          @keydown.space.prevent="emit('open-recipe', match.recipe.idMeal)"
+          :recipe-id="match.recipe.idMeal"
+          :title="match.recipe.strMeal"
+          :thumb="match.recipe.strMealThumb"
+          :badge="matchBadgeLabel(match.score)"
+          badge-variant="primary"
+          @open="(id) => emit('open-recipe', id)"
         >
-          <div class="relative aspect-video overflow-hidden">
-            <img
-              :src="match.recipe.strMealThumb"
-              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              :alt="match.recipe.strMeal"
-              loading="lazy"
-            >
-            <span
-              class="absolute bottom-4 left-4 px-3 py-1 bg-culinary-primary text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg"
-            >
-              {{ matchBadgeLabel(match.score) }}
-            </span>
-          </div>
-          <div class="p-6 space-y-3">
-            <h4 class="text-xl font-display font-bold leading-tight group-hover:text-culinary-primary transition-colors">
-              {{ match.recipe.strMeal }}
-            </h4>
-            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider truncate">
-              Uses: {{ match.matchedIngredients.join(', ') }}
-            </p>
-          </div>
-        </article>
+          <p class="text-xs text-slate-400 font-bold uppercase tracking-wider truncate">
+            Uses: {{ match.matchedIngredients.join(', ') }}
+          </p>
+        </RecipeCard>
       </div>
     </template>
   </section>
