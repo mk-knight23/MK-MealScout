@@ -76,6 +76,61 @@ describe('consolidateItems (grocery consolidation)', () => {
   })
 })
 
+describe('consolidateItems (unit-aware quantity consolidation)', () => {
+  const flour = (qtyNote: string): GroceryItem => ({
+    id: 'g1',
+    name: 'Flour',
+    qtyNote,
+    recipeOrigin: '',
+    checked: false,
+  })
+
+  const addNote = (existingNote: string, incomingNote: string): string => {
+    const result = consolidateItems(
+      [flour(existingNote)],
+      [{ name: 'Flour', qtyNote: incomingNote }],
+      makeIdFactory()
+    )
+    return result[0]!.qtyNote
+  }
+
+  it('sums same volume units: cups + cups', () => {
+    expect(addNote('1 cup', '2 cups')).toBe('3 cups')
+  })
+
+  it('sums identical quantities instead of deduping them: 1 cup + 1 cup', () => {
+    expect(addNote('1 cup', '1 cup')).toBe('2 cups')
+  })
+
+  it('converts mass units into the existing unit: g + kg', () => {
+    expect(addNote('500 g', '1 kg')).toBe('1500 g')
+  })
+
+  it('keeps the existing unit when it is the larger one: kg + g', () => {
+    expect(addNote('1 kg', '500 g')).toBe('1 1/2 kg')
+  })
+
+  it('does not consolidate across dimensions: cups + can stays a text merge', () => {
+    expect(addNote('2 cups', '1 can')).toBe('2 cups + 1 can')
+  })
+
+  it('does not consolidate when a preparation suffix is present', () => {
+    expect(addNote('1 cup chopped', '1 cup')).toBe('1 cup chopped + 1 cup')
+  })
+
+  it('leaves unitless numbers as a text merge', () => {
+    expect(addNote('2', '4')).toBe('2 + 4')
+  })
+
+  it('still dedupes identical non-numeric notes', () => {
+    expect(addNote('large', 'large')).toBe('large')
+  })
+
+  it('sums countable units and pluralises the display unit', () => {
+    expect(addNote('1 can', '1 can')).toBe('2 cans')
+  })
+})
+
 describe('parseGroceryJson (corrupt-input handling)', () => {
   it('returns empty list for null, corrupt, or wrong-shaped input', () => {
     expect(parseGroceryJson(null)).toEqual([])

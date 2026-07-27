@@ -223,9 +223,10 @@ const expiryLabel = (entry: PantryEntry): string => {
       {{ pantry.ingredientsError }} You can still type ingredient names manually.
     </p>
 
-    <!-- Entries -->
+    <!-- Entries. Empty state keys on isReady: no "pantry is empty" flash
+         while async hydration is still loading persisted data. -->
     <div
-      v-if="pantry.count === 0"
+      v-if="pantry.isReady && pantry.count === 0"
       class="text-center py-10 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl"
     >
       <p class="text-slate-500 font-medium">
@@ -237,7 +238,7 @@ const expiryLabel = (entry: PantryEntry): string => {
     </div>
 
     <ul
-      v-else
+      v-else-if="pantry.count > 0"
       class="grid grid-cols-1 md:grid-cols-2 gap-3"
       aria-label="Pantry ingredients"
     >

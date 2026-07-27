@@ -10,27 +10,65 @@ export interface ParsedMeasure {
 }
 
 const UNICODE_FRACTIONS: Record<string, number> = {
-  '½': 0.5, '⅓': 1 / 3, '⅔': 2 / 3, '¼': 0.25, '¾': 0.75,
-  '⅕': 0.2, '⅖': 0.4, '⅗': 0.6, '⅘': 0.8,
-  '⅙': 1 / 6, '⅚': 5 / 6, '⅛': 0.125, '⅜': 0.375, '⅝': 0.625, '⅞': 0.875,
+  '½': 0.5,
+  '⅓': 1 / 3,
+  '⅔': 2 / 3,
+  '¼': 0.25,
+  '¾': 0.75,
+  '⅕': 0.2,
+  '⅖': 0.4,
+  '⅗': 0.6,
+  '⅘': 0.8,
+  '⅙': 1 / 6,
+  '⅚': 5 / 6,
+  '⅛': 0.125,
+  '⅜': 0.375,
+  '⅝': 0.625,
+  '⅞': 0.875,
 }
 
 const KNOWN_UNITS = new Set([
-  'cup', 'cups',
-  'tbsp', 'tablespoon', 'tablespoons',
-  'tsp', 'teaspoon', 'teaspoons',
-  'oz', 'ounce', 'ounces',
-  'lb', 'lbs', 'pound', 'pounds',
-  'g', 'gram', 'grams',
-  'kg', 'kilogram', 'kilograms',
-  'ml', 'milliliter', 'milliliters',
-  'l', 'liter', 'liters', 'litre', 'litres',
-  'pinch', 'dash',
-  'clove', 'cloves',
-  'can', 'cans',
-  'slice', 'slices',
-  'piece', 'pieces',
-  'stick', 'sticks',
+  'cup',
+  'cups',
+  'tbsp',
+  'tablespoon',
+  'tablespoons',
+  'tsp',
+  'teaspoon',
+  'teaspoons',
+  'oz',
+  'ounce',
+  'ounces',
+  'lb',
+  'lbs',
+  'pound',
+  'pounds',
+  'g',
+  'gram',
+  'grams',
+  'kg',
+  'kilogram',
+  'kilograms',
+  'ml',
+  'milliliter',
+  'milliliters',
+  'l',
+  'liter',
+  'liters',
+  'litre',
+  'litres',
+  'pinch',
+  'dash',
+  'clove',
+  'cloves',
+  'can',
+  'cans',
+  'slice',
+  'slices',
+  'piece',
+  'pieces',
+  'stick',
+  'sticks',
 ])
 
 function normalizeFractions(input: string): string {
@@ -161,18 +199,79 @@ export function scaleMeasure(raw: string, factor: number): ScaledMeasure {
 }
 
 const VOLUME_TO_ML: Record<string, number> = {
-  tsp: 4.92892, teaspoon: 4.92892, teaspoons: 4.92892,
-  tbsp: 14.7868, tablespoon: 14.7868, tablespoons: 14.7868,
-  cup: 236.588, cups: 236.588,
-  ml: 1, milliliter: 1, milliliters: 1,
-  l: 1000, liter: 1000, liters: 1000, litre: 1000, litres: 1000,
+  tsp: 4.92892,
+  teaspoon: 4.92892,
+  teaspoons: 4.92892,
+  tbsp: 14.7868,
+  tablespoon: 14.7868,
+  tablespoons: 14.7868,
+  cup: 236.588,
+  cups: 236.588,
+  ml: 1,
+  milliliter: 1,
+  milliliters: 1,
+  l: 1000,
+  liter: 1000,
+  liters: 1000,
+  litre: 1000,
+  litres: 1000,
 }
 
 const MASS_TO_G: Record<string, number> = {
-  oz: 28.3495, ounce: 28.3495, ounces: 28.3495,
-  lb: 453.592, lbs: 453.592, pound: 453.592, pounds: 453.592,
-  g: 1, gram: 1, grams: 1,
-  kg: 1000, kilogram: 1000, kilograms: 1000,
+  oz: 28.3495,
+  ounce: 28.3495,
+  ounces: 28.3495,
+  lb: 453.592,
+  lbs: 453.592,
+  pound: 453.592,
+  pounds: 453.592,
+  g: 1,
+  gram: 1,
+  grams: 1,
+  kg: 1000,
+  kilogram: 1000,
+  kilograms: 1000,
+}
+
+/**
+ * Singular/plural display forms for known units. Abbreviations (tbsp, g, kg…)
+ * are invariant; spelled-out units pluralise. Unknown units pass through.
+ */
+const UNIT_FORMS: Record<string, { one: string; many: string }> = (() => {
+  const forms: Record<string, { one: string; many: string }> = {}
+  const add = (one: string, many: string): void => {
+    forms[one] = { one, many }
+    forms[many] = { one, many }
+  }
+  add('cup', 'cups')
+  add('tablespoon', 'tablespoons')
+  add('teaspoon', 'teaspoons')
+  add('ounce', 'ounces')
+  add('pound', 'pounds')
+  add('gram', 'grams')
+  add('kilogram', 'kilograms')
+  add('milliliter', 'milliliters')
+  add('liter', 'liters')
+  add('litre', 'litres')
+  add('pinch', 'pinches')
+  add('dash', 'dashes')
+  add('clove', 'cloves')
+  add('can', 'cans')
+  add('slice', 'slices')
+  add('piece', 'pieces')
+  add('stick', 'sticks')
+  add('lb', 'lbs')
+  for (const unit of ['tbsp', 'tsp', 'oz', 'g', 'kg', 'ml', 'l']) {
+    forms[unit] = { one: unit, many: unit }
+  }
+  return forms
+})()
+
+/** Display form of a unit for a given quantity ("1 cup" vs "3 cups"). */
+export function formatUnit(unit: string, quantity: number): string {
+  const form = UNIT_FORMS[unit.toLowerCase()]
+  if (!form) return unit
+  return Math.abs(quantity) === 1 ? form.one : form.many
 }
 
 export function convertVolume(qty: number, from: string, to: string): number | null {

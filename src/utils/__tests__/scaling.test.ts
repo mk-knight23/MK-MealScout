@@ -6,6 +6,7 @@ import {
   formatQuantity,
   convertVolume,
   convertMass,
+  formatUnit,
 } from '../scaling'
 
 describe('parseMeasure', () => {
@@ -149,5 +150,27 @@ describe('attached-unit measures (e.g. "400g")', () => {
 
   it('does not split tokens whose letters are not a known unit', () => {
     expect(parseMeasure('1 can 7up')).toMatchObject({ quantity: 1, unit: 'can', suffix: '7up' })
+  })
+})
+
+describe('formatUnit (singular/plural display forms)', () => {
+  it('singularises spelled-out units at quantity 1', () => {
+    expect(formatUnit('cups', 1)).toBe('cup')
+    expect(formatUnit('cans', 1)).toBe('can')
+  })
+
+  it('pluralises spelled-out units above 1', () => {
+    expect(formatUnit('cup', 3)).toBe('cups')
+    expect(formatUnit('kilogram', 2)).toBe('kilograms')
+  })
+
+  it('keeps abbreviations invariant', () => {
+    expect(formatUnit('g', 1500)).toBe('g')
+    expect(formatUnit('tbsp', 4)).toBe('tbsp')
+    expect(formatUnit('kg', 1)).toBe('kg')
+  })
+
+  it('passes unknown units through unchanged', () => {
+    expect(formatUnit('bunch', 2)).toBe('bunch')
   })
 })

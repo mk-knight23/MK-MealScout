@@ -141,9 +141,10 @@ const downloadJson = () => {
       </button>
     </form>
 
-    <!-- Empty state -->
+    <!-- Empty state. Keys on isReady: no "list is empty" flash while async
+         hydration is still loading persisted data. -->
     <div
-      v-if="grocery.items.length === 0"
+      v-if="grocery.isReady && grocery.items.length === 0"
       class="text-center py-14 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl"
     >
       <ShoppingCart
@@ -162,7 +163,7 @@ const downloadJson = () => {
 
     <!-- Items -->
     <ul
-      v-else
+      v-else-if="grocery.items.length > 0"
       class="space-y-2"
       aria-label="Grocery items"
     >
