@@ -48,6 +48,11 @@ const NAV_ITEMS: { view: AppView; label: string }[] = [
 ]
 
 onMounted(() => {
+  // Async storage hydration (IndexedDB w/ localStorage fallback). Mutations
+  // fired before these settle are queued by the stores and replayed — see
+  // docs/v3/STORAGE_MIGRATION.md.
+  void pantryStore.hydrate()
+  void groceryStore.hydrate()
   store.fetchCategories()
   // Initial catalogue load — deliberately NOT counted as a user search.
   store.searchRecipes('')

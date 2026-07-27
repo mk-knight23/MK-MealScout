@@ -85,9 +85,9 @@ const findMatches = async () => {
       </button>
     </div>
 
-    <!-- Empty pantry -->
+    <!-- Empty pantry. Keys on isReady: no flash while hydration loads. -->
     <div
-      v-if="pantry.count === 0"
+      v-if="pantry.isReady && pantry.count === 0"
       class="text-center py-16 glass rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-slate-800"
     >
       <UtensilsCrossed

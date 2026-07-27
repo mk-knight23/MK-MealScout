@@ -95,8 +95,11 @@ const importBackup = async (event: Event) => {
       role="group"
       aria-label="Backup and restore"
     >
+      <!-- Disabled until hydration completes: exporting mid-load would
+           produce a backup missing the user's real data. -->
       <button
-        class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary transition-all"
+        :disabled="!pantry.isReady || !grocery.isReady"
+        class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary disabled:opacity-40 transition-all"
         @click="exportBackup"
       >
         <Download :size="14" /> Backup
