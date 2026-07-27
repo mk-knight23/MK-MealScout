@@ -28,44 +28,41 @@ const onSearch = () => {
 </script>
 
 <template>
-  <div class="space-y-16">
-    <!-- Search & Hero -->
+  <div class="space-y-12">
+    <!-- Editorial masthead: serif-led, honest copy (approved Gate B preview) -->
     <section
-      class="text-center space-y-8 max-w-3xl mx-auto"
+      class="space-y-6"
       aria-labelledby="hero-heading"
     >
-      <div class="space-y-4">
+      <div class="space-y-3">
         <h2
           id="hero-heading"
-          class="text-5xl md:text-7xl font-display font-black leading-tight tracking-tight"
+          class="font-display font-black leading-[1.08] tracking-[-0.015em] text-[clamp(1.9rem,6vw,3.4rem)] max-w-[16ch]"
         >
-          Discover Your Next <br>
-          <span
-            class="text-culinary-primary italic underline decoration-8 decoration-culinary-primary/10"
-          >Masterpiece</span>
+          Cook what's <em class="italic text-mk-accent">already</em> in your kitchen.
         </h2>
-        <p class="text-slate-500 dark:text-slate-400 font-medium text-lg">
-          Browse hundreds of community recipes with high-res imagery, or cook from what is
-          already in your pantry.
+        <p class="text-mk-secondary max-w-[52ch]">
+          Search TheMealDB's community recipes by ingredient, dish or cuisine — or match them
+          against the pantry you track here.
         </p>
       </div>
 
-      <div class="relative group">
+      <div class="relative max-w-xl">
         <Search
-          class="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-culinary-primary transition-colors"
-          :size="24"
+          class="absolute left-4 top-1/2 -translate-y-1/2 text-mk-muted pointer-events-none"
+          :size="18"
           aria-hidden="true"
         />
         <input
           v-model="store.searchQuery"
           type="text"
-          placeholder="Search by ingredient, dish or cuisine..."
-          class="w-full bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-[2.5rem] pl-16 pr-8 py-6 text-xl outline-none focus:border-culinary-primary focus:ring-8 focus:ring-culinary-primary/5 transition-all shadow-2xl shadow-slate-200/50 dark:shadow-none"
+          placeholder="Search recipes or ingredients…"
+          class="w-full bg-mk-raised text-mk-ink placeholder:text-mk-muted border-2 border-mk-border-strong rounded-mk-sm pl-11 pr-24 py-3 outline-none focus-visible:border-mk-ring focus-visible:outline-offset-0 transition-colors"
           aria-label="Search recipes"
           @keyup.enter="onSearch"
         >
         <button
-          class="absolute right-3 top-3 bottom-3 bg-culinary-primary hover:bg-culinary-secondary text-white px-8 rounded-[2rem] font-black uppercase tracking-widest text-xs transition-all active:scale-95"
+          class="absolute right-1.5 top-1.5 bottom-1.5 bg-mk-accent-strong text-mk-on-accent px-5 rounded-mk-sm font-semibold text-sm border border-transparent hover:border-mk-ring transition-colors"
           aria-label="Search"
           @click="onSearch"
         >
@@ -73,20 +70,20 @@ const onSearch = () => {
         </button>
       </div>
 
-      <!-- Categories -->
+      <!-- Categories: horizontal snap-scroll rail on small screens -->
       <div
-        class="flex flex-wrap justify-center gap-3"
+        class="flex gap-2 overflow-x-auto snap-x pb-1 sm:flex-wrap sm:overflow-visible"
         role="group"
         aria-label="Recipe categories"
       >
         <button
           v-for="cat in store.categories.slice(0, 8)"
           :key="cat"
-          class="px-6 py-2.5 rounded-full text-sm font-bold transition-all"
+          class="shrink-0 snap-start px-4 py-2 rounded-full text-sm font-medium transition-colors"
           :class="
             store.selectedCategory === cat
-              ? 'bg-culinary-primary text-white shadow-lg shadow-culinary-primary/30'
-              : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary'
+              ? 'bg-mk-accent-strong text-mk-on-accent'
+              : 'bg-mk-raised border border-mk-border text-mk-secondary hover:border-mk-border-strong hover:text-mk-ink'
           "
           :aria-pressed="store.selectedCategory === cat"
           @click="store.fetchByCategory(cat)"
@@ -99,50 +96,55 @@ const onSearch = () => {
     <!-- Recipe Grid -->
     <section
       v-if="!store.loading"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
       aria-labelledby="recipes-heading"
     >
-      <h2
-        id="recipes-heading"
-        class="sr-only"
-      >
-        Recipe Results
-      </h2>
-      <RecipeCard
-        v-for="recipe in store.recipes"
-        :key="recipe.idMeal"
-        :recipe-id="recipe.idMeal"
-        :title="recipe.strMeal"
-        :thumb="recipe.strMealThumb"
-        :badge="recipe.strCategory || 'General'"
-        badge-variant="neutral"
-        @open="openRecipe"
-      >
-        <template #overlay>
-          <button
-            class="absolute top-4 right-4 p-3 rounded-2xl glass hover:bg-white transition-colors"
-            :aria-label="
-              store.favorites.includes(recipe.idMeal)
-                ? 'Remove from favorites'
-                : 'Add to favorites'
-            "
-            :aria-pressed="store.favorites.includes(recipe.idMeal)"
-            @click.stop="store.toggleFavorite(recipe.idMeal)"
-            @keydown.enter.stop
-            @keydown.space.stop
-          >
-            <Heart
-              :class="{ 'text-red-500 fill-red-500': store.favorites.includes(recipe.idMeal) }"
-              :size="20"
-            />
-          </button>
-        </template>
-        <div
-          class="flex items-center space-x-4 text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800"
+      <div class="mk-band rounded-mk-xs px-3 py-2 mb-5 flex items-baseline gap-3 flex-wrap">
+        <h2
+          id="recipes-heading"
+          class="font-display font-bold text-2xl"
         >
-          <span class="flex items-center gap-1 text-xs font-bold uppercase tracking-tighter"><MapPin :size="14" /> {{ recipe.strArea || 'Global' }}</span>
-        </div>
-      </RecipeCard>
+          From the catalogue
+        </h2>
+        <span class="text-sm text-mk-muted">TheMealDB community recipes</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7">
+        <RecipeCard
+          v-for="recipe in store.recipes"
+          :key="recipe.idMeal"
+          :recipe-id="recipe.idMeal"
+          :title="recipe.strMeal"
+          :thumb="recipe.strMealThumb"
+          :badge="recipe.strCategory || 'General'"
+          badge-variant="neutral"
+          @open="openRecipe"
+        >
+          <template #overlay>
+            <button
+              class="absolute top-3 right-3 p-2.5 rounded-full bg-mk-raised border border-mk-border text-mk-secondary hover:text-mk-accent transition-colors"
+              :aria-label="
+                store.favorites.includes(recipe.idMeal)
+                  ? 'Remove from favorites'
+                  : 'Add to favorites'
+              "
+              :aria-pressed="store.favorites.includes(recipe.idMeal)"
+              @click.stop="store.toggleFavorite(recipe.idMeal)"
+              @keydown.enter.stop
+              @keydown.space.stop
+            >
+              <Heart
+                :class="{ 'text-mk-accent fill-mk-accent': store.favorites.includes(recipe.idMeal) }"
+                :size="18"
+              />
+            </button>
+          </template>
+          <p class="flex items-center gap-1.5 text-xs font-medium text-mk-muted pt-3 border-t border-mk-border">
+            <MapPin
+              :size="14"
+              aria-hidden="true"
+            /> {{ recipe.strArea || 'Global' }}
+          </p>
+        </RecipeCard>
+      </div>
     </section>
 
     <!-- Loading State -->
@@ -151,33 +153,35 @@ const onSearch = () => {
       class="flex flex-col items-center justify-center py-20"
     >
       <div
-        class="w-16 h-16 border-4 border-culinary-primary/20 border-t-culinary-primary rounded-full animate-spin"
+        class="w-12 h-12 border-4 border-mk-accent-soft border-t-mk-accent rounded-full animate-spin"
+        aria-hidden="true"
       />
-      <p class="mt-4 font-black uppercase tracking-widest text-slate-400 text-xs">
-        Simmering your recipes...
+      <p class="mt-4 text-sm font-semibold text-mk-muted">
+        Simmering your recipes…
       </p>
     </div>
 
     <!-- Empty State -->
     <div
       v-if="!store.loading && store.recipes.length === 0"
-      class="text-center py-24 glass rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-slate-800"
+      class="text-center py-20 bg-mk-raised border-2 border-dashed border-mk-border rounded-mk-lg"
     >
       <ChefHat
-        class="mx-auto text-slate-300 mb-6"
-        :size="64"
+        class="mx-auto text-mk-muted mb-6"
+        :size="56"
+        aria-hidden="true"
       />
       <h3 class="text-2xl font-display font-bold">
         No recipes found
       </h3>
-      <p class="text-slate-500 mt-2">
+      <p class="text-mk-secondary mt-2">
         {{ store.errorMessage || 'Try a different keyword or category.' }}
       </p>
       <button
-        class="mt-8 text-culinary-primary font-black uppercase tracking-widest text-xs"
+        class="mt-6 text-mk-accent font-semibold text-sm hover:underline"
         @click="store.searchRecipes('')"
       >
-        Reset Search
+        Reset search
       </button>
     </div>
   </div>
