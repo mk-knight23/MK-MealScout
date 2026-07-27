@@ -19,7 +19,7 @@
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-C3x3/2DPfBwMug/FfDMS7MbSs2VUkapw83NqjXqh8bk=' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://www.themealdb.com data:; font-src https://fonts.gstatic.com; connect-src 'self' https://www.themealdb.com; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self' 'sha256-C3x3/2DPfBwMug/FfDMS7MbSs2VUkapw83NqjXqh8bk=' 'sha256-Pn/ouQLOVMKDfNVsv9IFoeCxeiKrw7ffOxPaSc26o1g=' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://www.themealdb.com data:; font-src https://fonts.gstatic.com; connect-src 'self' https://www.themealdb.com; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         }
       ]
     },
