@@ -116,7 +116,7 @@ const expiryLabel = (entry: PantryEntry): string => {
 
 <template>
   <section
-    class="glass rounded-[2rem] p-8 space-y-8"
+    class="bg-mk-raised border border-mk-border rounded-mk-lg shadow-e1 p-5 sm:p-8 space-y-8"
     aria-labelledby="pantry-heading"
   >
     <div class="flex flex-wrap items-center justify-between gap-4">
@@ -125,7 +125,7 @@ const expiryLabel = (entry: PantryEntry): string => {
         class="text-2xl font-display font-bold"
       >
         My Pantry
-        <span class="text-sm font-bold text-slate-400 ml-2">{{ pantry.count }} ingredients</span>
+        <span class="text-sm font-mono font-medium text-mk-muted ml-2 tabular-nums">{{ pantry.count }} ingredients</span>
       </h3>
       <div
         class="flex flex-wrap gap-2"
@@ -135,10 +135,13 @@ const expiryLabel = (entry: PantryEntry): string => {
         <button
           v-for="preset in pantry.presets"
           :key="preset.label"
-          class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary transition-all"
+          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-mk-sm text-sm font-semibold bg-mk-raised border border-mk-border text-mk-secondary hover:border-mk-border-strong hover:text-mk-ink transition-colors"
           @click="pantry.applyPreset(preset.label)"
         >
-          <Sparkles :size="14" /> {{ preset.label }}
+          <Sparkles
+            :size="14"
+            aria-hidden="true"
+          /> {{ preset.label }}
         </button>
       </div>
     </div>
@@ -153,7 +156,7 @@ const expiryLabel = (entry: PantryEntry): string => {
           v-model="nameInput"
           type="text"
           placeholder="Ingredient, e.g. Eggs"
-          class="w-full bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-3 text-sm outline-none focus:border-culinary-primary transition-all"
+          class="w-full bg-mk-raised text-mk-ink placeholder:text-mk-muted border-2 border-mk-border-strong rounded-mk-sm px-4 py-2.5 text-sm outline-none focus-visible:border-mk-ring focus-visible:outline-offset-0 transition-colors"
           aria-label="Ingredient name"
           autocomplete="off"
           role="combobox"
@@ -172,7 +175,7 @@ const expiryLabel = (entry: PantryEntry): string => {
         <ul
           v-if="isSuggestionsVisible"
           id="pantry-suggestions"
-          class="absolute z-20 mt-2 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden"
+          class="absolute z-20 mt-2 w-full bg-mk-raised border border-mk-border-strong rounded-mk-sm shadow-e2 overflow-hidden"
           role="listbox"
           aria-label="Ingredient suggestions"
         >
@@ -182,11 +185,11 @@ const expiryLabel = (entry: PantryEntry): string => {
             :key="suggestion"
             role="option"
             :aria-selected="index === activeIndex"
-            class="px-5 py-2.5 text-sm font-medium cursor-pointer transition-colors"
+            class="px-4 py-2.5 text-sm font-medium cursor-pointer transition-colors"
             :class="
               index === activeIndex
-                ? 'bg-culinary-primary/10 text-culinary-primary'
-                : 'hover:bg-culinary-primary/10 hover:text-culinary-primary'
+                ? 'bg-mk-accent-soft text-mk-ink'
+                : 'text-mk-secondary hover:bg-mk-accent-soft hover:text-mk-ink'
             "
             @mousedown.prevent="pickSuggestion(suggestion)"
             @mouseenter="activeIndex = index"
@@ -199,26 +202,29 @@ const expiryLabel = (entry: PantryEntry): string => {
         v-model="qtyInput"
         type="text"
         placeholder="Qty note (optional)"
-        class="bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-3 text-sm outline-none focus:border-culinary-primary transition-all"
+        class="bg-mk-raised text-mk-ink placeholder:text-mk-muted border-2 border-mk-border-strong rounded-mk-sm px-4 py-2.5 text-sm outline-none focus-visible:border-mk-ring focus-visible:outline-offset-0 transition-colors"
         aria-label="Quantity note"
       >
       <input
         v-model="expiryInput"
         type="date"
-        class="bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-2xl px-5 py-3 text-sm outline-none focus:border-culinary-primary transition-all text-slate-500"
+        class="bg-mk-raised text-mk-secondary border-2 border-mk-border-strong rounded-mk-sm px-4 py-2.5 text-sm outline-none focus-visible:border-mk-ring focus-visible:outline-offset-0 transition-colors"
         aria-label="Expiry date"
       >
       <button
         type="submit"
-        class="flex items-center justify-center gap-2 bg-culinary-primary hover:bg-culinary-secondary text-white px-6 py-3 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95"
+        class="flex items-center justify-center gap-2 bg-mk-accent-strong text-mk-on-accent px-5 py-2.5 rounded-mk-sm font-semibold text-sm border border-transparent hover:border-mk-ring transition-colors"
         aria-label="Add ingredient to pantry"
       >
-        <Plus :size="16" /> Add
+        <Plus
+          :size="16"
+          aria-hidden="true"
+        /> Add
       </button>
     </form>
     <p
       v-if="pantry.ingredientsError"
-      class="text-xs text-slate-400 font-medium"
+      class="text-sm text-mk-muted font-medium"
     >
       {{ pantry.ingredientsError }} You can still type ingredient names manually.
     </p>
@@ -227,12 +233,12 @@ const expiryLabel = (entry: PantryEntry): string => {
          while async hydration is still loading persisted data. -->
     <div
       v-if="pantry.isReady && pantry.count === 0"
-      class="text-center py-10 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl"
+      class="text-center py-10 border-2 border-dashed border-mk-border rounded-mk-md"
     >
-      <p class="text-slate-500 font-medium">
+      <p class="text-mk-secondary font-medium">
         Your pantry is empty.
       </p>
-      <p class="text-xs text-slate-400 mt-1">
+      <p class="text-sm text-mk-muted mt-1">
         Add ingredients above or start with a preset.
       </p>
     </div>
@@ -245,39 +251,39 @@ const expiryLabel = (entry: PantryEntry): string => {
       <li
         v-for="entry in pantry.entries"
         :key="entry.id"
-        class="flex items-center gap-3 bg-white/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3"
+        class="flex items-center gap-3 bg-mk-page border border-mk-border rounded-mk-sm px-4 py-3"
       >
         <template v-if="editingId === entry.id">
           <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
             <input
               v-model="editName"
               type="text"
-              class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-sm outline-none focus:border-culinary-primary"
+              class="bg-mk-raised text-mk-ink border border-mk-border-strong rounded-mk-xs px-3 py-1.5 text-sm outline-none focus-visible:border-mk-ring focus-visible:outline-offset-0"
               aria-label="Edit ingredient name"
             >
             <input
               v-model="editQty"
               type="text"
               placeholder="Qty note"
-              class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-sm outline-none focus:border-culinary-primary"
+              class="bg-mk-raised text-mk-ink placeholder:text-mk-muted border border-mk-border-strong rounded-mk-xs px-3 py-1.5 text-sm outline-none focus-visible:border-mk-ring focus-visible:outline-offset-0"
               aria-label="Edit quantity note"
             >
             <input
               v-model="editExpiry"
               type="date"
-              class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-sm outline-none focus:border-culinary-primary"
+              class="bg-mk-raised text-mk-ink border border-mk-border-strong rounded-mk-xs px-3 py-1.5 text-sm outline-none focus-visible:border-mk-ring focus-visible:outline-offset-0"
               aria-label="Edit expiry date"
             >
           </div>
           <button
-            class="p-2 rounded-xl text-emerald-600 hover:bg-emerald-500/10"
+            class="p-2 rounded-mk-xs text-mk-herb hover:bg-mk-herb-soft"
             aria-label="Save changes"
             @click="saveEdit"
           >
             <Check :size="16" />
           </button>
           <button
-            class="p-2 rounded-xl text-slate-400 hover:bg-slate-500/10"
+            class="p-2 rounded-mk-xs text-mk-muted hover:bg-mk-sunken"
             aria-label="Cancel editing"
             @click="cancelEdit"
           >
@@ -286,17 +292,17 @@ const expiryLabel = (entry: PantryEntry): string => {
         </template>
         <template v-else>
           <div class="flex-1 min-w-0">
-            <p class="font-bold text-sm truncate">
+            <p class="font-semibold text-sm truncate">
               {{ entry.name }}
               <span
                 v-if="entry.quantityNote"
-                class="text-slate-400 font-medium ml-1"
+                class="text-mk-muted font-medium ml-1"
               >· {{ entry.quantityNote }}</span>
             </p>
             <p
               v-if="expiryLabel(entry)"
-              class="text-[11px] font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1"
-              :class="isExpiringSoon(entry.expiresAt) ? 'text-amber-600 dark:text-amber-400' : 'text-slate-400'"
+              class="text-xs font-semibold mt-0.5 flex items-center gap-1"
+              :class="isExpiringSoon(entry.expiresAt) ? 'text-mk-danger' : 'text-mk-muted'"
             >
               <AlertTriangle
                 v-if="isExpiringSoon(entry.expiresAt)"
@@ -307,14 +313,14 @@ const expiryLabel = (entry: PantryEntry): string => {
             </p>
           </div>
           <button
-            class="p-2 rounded-xl text-slate-400 hover:text-culinary-primary hover:bg-culinary-primary/10 transition-colors"
+            class="p-2 rounded-mk-xs text-mk-muted hover:text-mk-accent hover:bg-mk-accent-soft transition-colors"
             :aria-label="`Edit ${entry.name}`"
             @click="startEdit(entry)"
           >
             <Pencil :size="16" />
           </button>
           <button
-            class="p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+            class="p-2 rounded-mk-xs text-mk-muted hover:text-mk-danger hover:bg-mk-danger-soft transition-colors"
             :aria-label="`Remove ${entry.name} from pantry`"
             @click="pantry.removeEntry(entry.id)"
           >
