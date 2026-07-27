@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import './style.css'
 import App from './App.vue'
+import { createAppRouter } from './router'
 import { createAppErrorHandler } from './utils/errorHandler'
 
 const app = createApp(App)
@@ -11,4 +12,5 @@ const app = createApp(App)
 app.config.errorHandler = createAppErrorHandler({ isDev: import.meta.env.DEV })
 
 app.use(createPinia())
+app.use(createAppRouter())
 app.mount('#app')
