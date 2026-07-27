@@ -52,10 +52,10 @@ const findMatches = async () => {
 
 <template>
   <section
-    class="space-y-8"
+    class="space-y-6"
     aria-labelledby="cook-heading"
   >
-    <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="mk-band rounded-mk-xs px-3 py-2 flex flex-wrap items-center justify-between gap-4">
       <div>
         <h3
           id="cook-heading"
@@ -63,24 +63,26 @@ const findMatches = async () => {
         >
           What can I cook?
         </h3>
-        <p class="text-sm text-slate-500 font-medium mt-1">
+        <p class="text-sm text-mk-secondary font-medium mt-1">
           Finds recipes matching your pantry ingredients.
           <span v-if="isCapped">Uses your first {{ MAX_MATCH_INGREDIENTS }} pantry items.</span>
         </p>
       </div>
       <button
         :disabled="pantry.count === 0 || loading"
-        class="flex items-center gap-2 bg-culinary-primary hover:bg-culinary-secondary disabled:opacity-40 disabled:cursor-not-allowed text-white px-8 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95"
+        class="flex items-center gap-2 bg-mk-accent-strong text-mk-on-accent disabled:opacity-40 disabled:cursor-not-allowed px-5 py-2.5 rounded-mk-sm font-semibold text-sm border border-transparent hover:border-mk-ring transition-colors"
         @click="findMatches"
       >
         <RefreshCw
           v-if="hasSearched"
           :size="16"
           :class="{ 'animate-spin': loading }"
+          aria-hidden="true"
         />
         <Search
           v-else
           :size="16"
+          aria-hidden="true"
         />
         {{ hasSearched ? 'Refresh matches' : 'Find recipes' }}
       </button>
@@ -89,17 +91,17 @@ const findMatches = async () => {
     <!-- Empty pantry. Keys on isReady: no flash while hydration loads. -->
     <div
       v-if="pantry.isReady && pantry.count === 0"
-      class="text-center py-16 glass rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-slate-800"
+      class="text-center py-16 bg-mk-raised border-2 border-dashed border-mk-border rounded-mk-lg"
     >
       <UtensilsCrossed
-        class="mx-auto text-slate-300 mb-4"
+        class="mx-auto text-mk-muted mb-4"
         :size="48"
         aria-hidden="true"
       />
       <p class="font-display font-bold text-xl">
         Add ingredients to your pantry first
       </p>
-      <p class="text-sm text-slate-500 mt-1">
+      <p class="text-sm text-mk-secondary mt-1">
         Then we can suggest recipes you can cook right now.
       </p>
     </div>
@@ -110,26 +112,29 @@ const findMatches = async () => {
       class="flex flex-col items-center py-16"
       role="status"
     >
-      <div class="w-12 h-12 border-4 border-culinary-primary/20 border-t-culinary-primary rounded-full animate-spin" />
-      <p class="mt-4 font-black uppercase tracking-widest text-slate-400 text-xs">
-        Matching your pantry...
+      <div
+        class="w-12 h-12 border-4 border-mk-accent-soft border-t-mk-accent rounded-full animate-spin"
+        aria-hidden="true"
+      />
+      <p class="mt-4 text-sm font-semibold text-mk-muted">
+        Matching your pantry…
       </p>
     </div>
 
     <!-- Total API failure -->
     <div
       v-else-if="errorMessage"
-      class="text-center py-16 glass rounded-[2rem] border border-red-200 dark:border-red-900/40"
+      class="text-center py-16 bg-mk-raised border border-mk-danger rounded-mk-lg"
       role="alert"
     >
-      <p class="font-display font-bold text-xl text-red-600 dark:text-red-400">
+      <p class="font-display font-bold text-xl text-mk-danger">
         Something went wrong
       </p>
-      <p class="text-sm text-slate-500 mt-2">
+      <p class="text-sm text-mk-secondary mt-2">
         {{ errorMessage }}
       </p>
       <button
-        class="mt-6 text-culinary-primary font-black uppercase tracking-widest text-xs"
+        class="mt-6 text-mk-accent font-semibold text-sm hover:underline"
         @click="findMatches"
       >
         Try again
@@ -139,17 +144,17 @@ const findMatches = async () => {
     <!-- Zero results -->
     <div
       v-else-if="hasSearched && matches.length === 0"
-      class="text-center py-16 glass rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-slate-800"
+      class="text-center py-16 bg-mk-raised border-2 border-dashed border-mk-border rounded-mk-lg"
     >
       <ChefHat
-        class="mx-auto text-slate-300 mb-4"
+        class="mx-auto text-mk-muted mb-4"
         :size="48"
         aria-hidden="true"
       />
       <p class="font-display font-bold text-xl">
         No matches found
       </p>
-      <p class="text-sm text-slate-500 mt-1">
+      <p class="text-sm text-mk-secondary mt-1">
         Try adding more common ingredients — exact names like "Chicken" or "Rice" match best.
       </p>
     </div>
@@ -158,12 +163,12 @@ const findMatches = async () => {
     <template v-else-if="matches.length > 0">
       <p
         v-if="failedIngredients.length"
-        class="text-xs text-amber-600 dark:text-amber-400 font-bold"
+        class="text-sm text-mk-danger font-semibold"
       >
         Could not check: {{ failedIngredients.join(', ') }}. Results may be incomplete.
       </p>
       <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7"
         aria-label="Recipe matches"
       >
         <RecipeCard
@@ -176,7 +181,7 @@ const findMatches = async () => {
           badge-variant="primary"
           @open="(id) => emit('open-recipe', id)"
         >
-          <p class="text-xs text-slate-400 font-bold uppercase tracking-wider truncate">
+          <p class="text-xs text-mk-muted font-medium truncate">
             Uses: {{ match.matchedIngredients.join(', ') }}
           </p>
         </RecipeCard>

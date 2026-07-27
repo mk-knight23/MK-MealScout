@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+// Instantiating the settings store applies the persisted theme to <html>
+// (data-theme / data-motion / data-transparency) as soon as the app boots.
 import { useSettingsStore } from './stores/settings'
 import { usePantryStore } from './stores/pantryStore'
 import { useGroceryStore } from './stores/groceryStore'
@@ -12,7 +14,7 @@ import RecipeDetailModal from './components/recipe/RecipeDetailModal.vue'
 
 const route = useRoute()
 const router = useRouter()
-const settingsStore = useSettingsStore()
+useSettingsStore()
 const pantryStore = usePantryStore()
 const groceryStore = useGroceryStore()
 const { lastAction } = useKeyboardControls()
@@ -48,14 +50,13 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div
-    class="min-h-screen transition-colors duration-500"
-    :class="{ dark: settingsStore.isDarkMode, light: !settingsStore.isDarkMode }"
-  >
+  <div class="min-h-screen">
     <AppHeader />
 
+    <!-- Content capped at --mk-content-max (1200px): wider viewports gain
+         editorial margin, cards never stretch. -->
     <main
-      class="max-w-7xl mx-auto px-6 py-12"
+      class="max-w-[var(--mk-content-max)] mx-auto px-4 sm:px-6 py-10 md:py-12"
       role="main"
     >
       <!-- KeepAlive preserves per-view state (e.g. cook-match results) across

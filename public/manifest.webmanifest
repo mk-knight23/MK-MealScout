@@ -5,10 +5,14 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#fdf7f0",
-  "theme_color": "#c2410c",
+  "background_color": "#FAF6EF",
+  "theme_color": "#B45309",
   "orientation": "any",
-  "categories": ["food", "lifestyle", "productivity"],
+  "categories": [
+    "food",
+    "lifestyle",
+    "productivity"
+  ],
   "lang": "en",
   "icons": [
     {

@@ -24,7 +24,38 @@
     <meta name="twitter:title" content="MK MealScout — Recipe Finder" />
     <meta name="twitter:description" content="Match recipes to ingredients already in your pantry, discover dishes by cuisine or category, and build a grocery list for what's missing." />
 
-    <meta name="theme-color" content="#d97706" />
+    <meta name="theme-color" content="#FAF6EF" />
+
+    <!--
+      First-paint theme stamping (MK theme engine, V3). Reads
+      mk.mealscout.theme.v1 / mk.mealscout.a11y.v1 and stamps data-theme,
+      data-motion and data-transparency on <html> before CSS paints (no
+      flash). Keep in sync with src/stores/settings.ts. CSP: this script is
+      allowlisted by hash in vercel.json — editing it here requires
+      recomputing the sha256 there (see docs note in vercel.json section
+      of the PR/commit).
+    -->
+    <script>
+      (function () {
+        var html = document.documentElement;
+        function prefers(query) {
+          try { return window.matchMedia(query).matches; } catch (e) { return false; }
+        }
+        function read(key) {
+          try { return localStorage.getItem(key); } catch (e) { return null; }
+        }
+        var mode = read('mk.mealscout.theme.v1');
+        if (mode !== 'light' && mode !== 'dark' && mode !== 'hc' && mode !== 'system') mode = 'light';
+        var theme = mode === 'system' ? (prefers('(prefers-color-scheme: dark)') ? 'dark' : 'light') : mode;
+        html.setAttribute('data-theme', theme);
+        var a11y = null;
+        try { a11y = JSON.parse(read('mk.mealscout.a11y.v1') || 'null'); } catch (e) { a11y = null; }
+        var motion = (a11y && a11y.motion === 'reduced') || prefers('(prefers-reduced-motion: reduce)');
+        var transparency = (a11y && a11y.transparency === 'reduced') || prefers('(prefers-reduced-transparency: reduce)');
+        html.setAttribute('data-motion', motion ? 'reduced' : 'full');
+        html.setAttribute('data-transparency', transparency ? 'reduced' : 'normal');
+      })();
+    </script>
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -88,12 +119,15 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- V3 typography: Fraunces display serif (700/900 + italic 900) replaces
+         Playfair-900; Inter body trimmed to the weights actually used;
+         JetBrains Mono for tabular stat digits and kbd hints. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,900;1,900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
   </head>
-  <body class="bg-[#fffbf7]">
+  <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

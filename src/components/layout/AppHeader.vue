@@ -2,20 +2,11 @@
 import { computed, type FunctionalComponent } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRecipeStore } from '@/stores/recipeStore'
-import { useSettingsStore } from '@/stores/settings'
+import { useSettingsStore, type ThemeMode } from '@/stores/settings'
 import { usePantryStore } from '@/stores/pantryStore'
 import { useGroceryStore } from '@/stores/groceryStore'
 import { useAudio } from '@/composables/useAudio'
-import {
-  ChefHat,
-  Compass,
-  Heart,
-  Moon,
-  Refrigerator,
-  Settings,
-  ShoppingCart,
-  Sun,
-} from 'lucide-vue-next'
+import { Compass, Contrast, Heart, Moon, Refrigerator, Settings, ShoppingCart, Sun } from 'lucide-vue-next'
 
 const route = useRoute()
 const store = useRecipeStore()
@@ -40,11 +31,17 @@ const NAV_ITEMS: NavItem[] = [
 /** The recipe modal renders over the discover catalogue — keep Discover lit. */
 const activeName = computed(() => (route.name === 'recipe' ? 'discover' : route.name))
 
+/** Quick cycle through the three signature themes; full menu lives in settings. */
+const NEXT_THEME: Record<string, ThemeMode> = { light: 'dark', dark: 'hc', hc: 'light' }
+const NEXT_THEME_LABEL: Record<string, string> = {
+  light: 'Switch to dark theme',
+  dark: 'Switch to high contrast theme',
+  hc: 'Switch to light theme',
+}
+
 const toggleTheme = () => {
   audio.playClick()
-  const nextTheme =
-    settingsStore.theme === 'dark' ? 'light' : settingsStore.theme === 'light' ? 'system' : 'dark'
-  settingsStore.setTheme(nextTheme)
+  settingsStore.setTheme(NEXT_THEME[settingsStore.resolvedTheme] ?? 'light')
 }
 
 const openSettings = () => {
@@ -55,24 +52,16 @@ const openSettings = () => {
 
 <template>
   <header
-    class="sticky top-0 z-40 glass border-b border-slate-200 dark:border-slate-800 px-6 py-4"
+    class="sticky top-0 z-40 mk-glass-nav border-b border-mk-border px-4 sm:px-6 py-3"
     role="banner"
   >
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <div class="flex items-center space-x-3">
-        <div
-          class="bg-culinary-primary p-2 rounded-2xl rotate-3 shadow-lg shadow-culinary-primary/20"
+    <div class="max-w-[var(--mk-content-max)] mx-auto flex justify-between items-center gap-4">
+      <h1 class="text-xl font-display font-bold whitespace-nowrap">
+        MK MealScout<span
+          class="text-mk-accent"
           aria-hidden="true"
-        >
-          <ChefHat
-            class="text-white"
-            :size="24"
-          />
-        </div>
-        <h1 class="text-2xl font-display font-black tracking-tighter uppercase dark:text-white">
-          MK_<span class="text-culinary-primary">MealScout</span>
-        </h1>
-      </div>
+        >.</span>
+      </h1>
 
       <nav
         class="hidden md:flex items-center gap-1"
@@ -82,11 +71,11 @@ const openSettings = () => {
           v-for="item in NAV_ITEMS"
           :key="item.name"
           :to="item.to"
-          class="px-5 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all"
+          class="px-4 py-1.5 rounded-mk-sm text-sm font-medium transition-colors"
           :class="
             activeName === item.name
-              ? 'bg-culinary-primary text-white shadow-lg shadow-culinary-primary/30'
-              : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+              ? 'text-mk-ink shadow-[inset_0_-2px_0_var(--mk-accent)]'
+              : 'text-mk-secondary hover:bg-mk-accent-soft hover:text-mk-ink'
           "
           :aria-current="activeName === item.name ? 'page' : undefined"
           @click="audio.playClick()"
@@ -94,68 +83,68 @@ const openSettings = () => {
           {{ item.label }}
           <span
             v-if="item.name === 'pantry' && pantryStore.count > 0"
-            class="ml-1 opacity-70"
+            class="ml-1 font-mono text-xs text-mk-muted tabular-nums"
           >{{ pantryStore.count }}</span>
           <span
             v-if="item.name === 'grocery' && groceryStore.remainingCount > 0"
-            class="ml-1 opacity-70"
+            class="ml-1 font-mono text-xs text-mk-muted tabular-nums"
           >{{ groceryStore.remainingCount }}</span>
         </RouterLink>
       </nav>
 
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center gap-1.5 sm:gap-2">
         <button
-          class="p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          class="p-2.5 rounded-mk-sm text-mk-secondary hover:bg-mk-accent-soft hover:text-mk-ink transition-colors"
           aria-label="Open settings"
           @click="openSettings"
         >
-          <Settings
-            class="text-slate-600 dark:text-slate-300"
-            :size="20"
-          />
+          <Settings :size="20" />
         </button>
         <button
-          class="p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          :aria-label="settingsStore.isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+          class="p-2.5 rounded-mk-sm text-mk-secondary hover:bg-mk-accent-soft hover:text-mk-ink transition-colors"
+          :aria-label="NEXT_THEME_LABEL[settingsStore.resolvedTheme] ?? 'Switch to light theme'"
           @click="toggleTheme"
         >
           <Sun
-            v-if="settingsStore.isDarkMode"
+            v-if="settingsStore.resolvedTheme === 'light'"
             :size="20"
-            class="text-amber-400"
           />
           <Moon
+            v-else-if="settingsStore.resolvedTheme === 'dark'"
+            :size="20"
+          />
+          <Contrast
             v-else
             :size="20"
-            class="text-blue-600"
           />
         </button>
         <div
-          class="hidden sm:flex items-center space-x-2 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-2xl border border-slate-200 dark:border-slate-700"
+          class="hidden sm:flex items-center gap-2 bg-mk-raised border border-mk-border rounded-mk-sm px-3 py-1.5"
           role="status"
           :aria-label="`${store.favorites.length} saved recipes`"
         >
           <Heart
-            class="text-culinary-primary fill-culinary-primary"
-            :size="16"
+            class="text-mk-accent fill-mk-accent"
+            :size="14"
+            aria-hidden="true"
           />
-          <span class="text-xs font-black uppercase tracking-widest">{{ store.favorites.length }} Saved</span>
+          <span class="text-xs font-semibold text-mk-secondary font-mono tabular-nums">{{ store.favorites.length }} saved</span>
         </div>
       </div>
     </div>
     <nav
-      class="md:hidden max-w-7xl mx-auto flex items-center gap-1 pt-3"
+      class="md:hidden max-w-[var(--mk-content-max)] mx-auto flex items-center gap-1 pt-2.5"
       aria-label="Main navigation (mobile)"
     >
       <RouterLink
         v-for="item in NAV_ITEMS"
         :key="item.name"
         :to="item.to"
-        class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all"
+        class="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-mk-sm text-xs font-semibold transition-colors"
         :class="
           activeName === item.name
-            ? 'bg-culinary-primary text-white'
-            : 'text-slate-500 bg-slate-100 dark:bg-slate-800'
+            ? 'bg-mk-accent-strong text-mk-on-accent'
+            : 'text-mk-secondary bg-mk-raised border border-mk-border'
         "
         :aria-current="activeName === item.name ? 'page' : undefined"
         @click="audio.playClick()"

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Temporary "MS" lettermark until the Wave 3 brand pass. -->
-  <rect width="64" height="64" rx="14" fill="#b45309"/>
-  <text x="32" y="43" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#ffffff" letter-spacing="-1">MS</text>
+  <!-- V3 Warm Kitchen mark: serif MS lettermark on saffron (--mk-accent #B45309). -->
+  <rect width="64" height="64" rx="14" fill="#B45309"/>
+  <text x="32" y="44" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="32" fill="#FFF7EC" letter-spacing="-1">MS</text>
 </svg>

@@ -43,8 +43,11 @@ describe('MK MealScout Recipe Finder', () => {
 
   it('renders hero section', async () => {
     await renderApp()
-    expect(screen.getByText(/Discover Your Next/i)).toBeInTheDocument()
-    expect(screen.getByText(/Masterpiece/i)).toBeInTheDocument()
+    // V3 "Warm Kitchen Editorial": the approved Gate B masthead replaces the
+    // "Discover Your Next Masterpiece" hero (binding design preview).
+    expect(
+      screen.getByRole('heading', { name: /Cook what's already in your kitchen/i })
+    ).toBeInTheDocument()
   })
 
   it('renders search input and button', async () => {
@@ -148,7 +151,10 @@ describe('routing (vue-router, history mode)', () => {
     await renderApp('/recipe/52772')
     expect(await screen.findByRole('dialog', { name: /Recipe details/i })).toBeInTheDocument()
     // Discover catalogue renders underneath so the deep link has a real page.
-    expect(screen.getByText(/Discover Your Next/i)).toBeInTheDocument()
+    // (Heading text updated with the V3 masthead — see 'renders hero section'.)
+    expect(
+      screen.getByRole('heading', { name: /Cook what's already in your kitchen/i })
+    ).toBeInTheDocument()
   })
 
   it('closing a deep-linked recipe (no in-app history) lands on discover', async () => {

@@ -1,107 +1,266 @@
 @import 'tailwindcss';
 
-/**
- * Class-based dark mode. Without this, Tailwind v4's default `dark:` variant
- * follows the OS `prefers-color-scheme` media query, while the app toggles a
- * `.dark`/`.light` class on <html>. That desync left the light theme illegible
- * under OS-dark (light-mode surfaces + dark-mode text). This binds `dark:`
- * utilities to the `.dark` class instead so the chosen theme always wins.
- */
-@custom-variant dark (&:where(.dark, .dark *));
-
-@theme {
-  /* amber-700 / orange-700: white text clears WCAG AA (5.02:1 and 5.18:1).
-     The previous #f59e0b/#ea580c gave white only 2.15:1 / 3.56:1 on every CTA. */
-  --color-culinary-primary: #b45309;
-  --color-culinary-secondary: #c2410c;
-  --color-culinary-accent: #10b981;
-  --color-culinary-bg: #ece4f0;
-  --color-culinary-dark: #0f0a1a;
-
-  --font-display: 'Playfair Display', serif;
-}
-
+/* ============================================================
+   MK FAMILY PRIMITIVES (shared grammar across MK V3 products)
+   Source of truth: V3-PROGRAM/design/previews/mealscout-warm-kitchen.html
+   ============================================================ */
 :root {
-  --culinary-bg: #ece4f0;
-  --app-bg-light: #ece4f0;
-  --app-bg-dark: #0f0a1a;
+  --mk-radius-xs: 4px;
+  --mk-radius-sm: 8px;
+  --mk-radius-md: 12px;
+  --mk-radius-lg: 16px;
+  --mk-radius-xl: 24px;
+  --mk-radius-full: 9999px;
+
+  --mk-blur-nav: 12px;
+  --mk-blur-panel: 16px;
+  --mk-blur-overlay: 20px;
+
+  --mk-dur-fast: 120ms;
+  --mk-dur-base: 200ms;
+  --mk-dur-slow: 320ms;
+  --mk-ease-out: cubic-bezier(0.2, 0, 0, 1);
+
+  --mk-font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --mk-font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mk-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --mk-content-max: 1200px; /* grid cap: ≥1440px viewports gain margin, not stretch */
 }
 
+/* ============================================================
+   MEALSCOUT THEMES — Tier 2 semantic tokens only.
+   Contrast ratios below are computed WCAG values (see Gate B summary).
+   ============================================================ */
+
+/* Signature light — "Warm Kitchen" (default; light-first product).
+   Replaces the dead lavender token (#ece4f0), the cream/lavender dual
+   source of truth, the 3-orange drift (#b45309/#c2410c/#d97706) and every
+   slate-* gray with a single saffron accent + aubergine-brown ink scale. */
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --mk-bg-page: #faf6ef; /* warm cream */
+  --mk-bg-raised: #ffffff;
+  --mk-bg-sunken: #f1eadf;
+  --mk-text-primary: #2b1d12; /* aubergine-brown ink — 15.14:1 on page */
+  --mk-text-secondary: #5c4a38; /* 7.82:1 on page */
+  --mk-text-muted: #7a6754; /* 5.00:1 on page, 5.39:1 on white (fixes slate-400 ≈2.4:1) */
+  --mk-accent: #b45309; /* saffron — white text 5.02:1 (documented AA fix, kept) */
+  --mk-accent-strong: #92400e; /* white text 7.09:1 */
+  --mk-accent-soft: rgba(180, 83, 9, 0.1);
+  --mk-accent-contrast: #ffffff;
+  --mk-herb: #4d7c0f; /* herb green — "have it" / match states, 4.99:1 as text on white */
+  --mk-herb-soft: rgba(77, 124, 15, 0.12);
+  --mk-danger: #b91c1c; /* 6.01:1 on page */
+  --mk-danger-soft: rgba(185, 28, 28, 0.08);
+  --mk-border: rgba(43, 29, 18, 0.1);
+  --mk-border-strong: rgba(43, 29, 18, 0.22);
+  --mk-ring: #c2410c;
+
+  --mk-glass-bg: rgba(255, 253, 248, 0.86);
+  --mk-glass-solid: #fffdf8; /* mandatory solid fallback for every glass surface */
+  --mk-glass-blur: var(--mk-blur-nav);
+  --mk-overlay-blur: var(--mk-blur-overlay);
+  --mk-scrim: rgba(20, 11, 4, 0.6);
+
+  /* Photo-overlay treatment (photo-relative, not theme-relative: defined once
+     here, flattened only by the HC block per the approved preview's
+     `[data-theme="hc"] .ph-tag/.time-chip { background: #140B04 }` rule). */
+  --mk-photo-ink: #fff7ec; /* 18.31:1 on the solid HC plate */
+  --mk-photo-plate: rgba(20, 11, 4, 0.65);
+  --mk-photo-scrim: linear-gradient(0deg, rgba(20, 11, 4, 0.72), rgba(20, 11, 4, 0) 60%);
+  --mk-photo-title-plate: transparent; /* opaque only in HC */
+  --mk-page-wash: linear-gradient(180deg, #fdf9f2 0%, #faf6ef 30%, #f6efe3 100%);
+  --mk-band: linear-gradient(90deg, rgba(180, 83, 9, 0.06), rgba(180, 83, 9, 0));
+  --mk-shadow-e1: 0 1px 2px rgba(43, 29, 18, 0.06);
+  --mk-shadow-e2: 0 4px 12px rgba(43, 29, 18, 0.07);
+  --mk-border-w: 1px;
+  --mk-ring-w: 2px;
+}
+
+/* Signature dark — "Evening Kitchen" (warm charcoal, never purple-black) */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --mk-bg-page: #191411;
+  --mk-bg-raised: #221b16;
+  --mk-bg-sunken: #120e0b;
+  --mk-text-primary: #f3eae0; /* 15.36:1 on page */
+  --mk-text-secondary: #cdbca8; /* 9.88:1 on page */
+  --mk-text-muted: #a6937f; /* 6.18:1 on page */
+  --mk-accent: #e08a2e; /* 6.82:1 as text on page */
+  --mk-accent-strong: #e08a2e;
+  --mk-accent-soft: rgba(224, 138, 46, 0.14);
+  --mk-accent-contrast: #2a1607; /* 6.45:1 on accent */
+  --mk-herb: #a3c960; /* 9.64:1 as text on page */
+  --mk-herb-soft: rgba(163, 201, 96, 0.14);
+  --mk-danger: #f28b82; /* 7.65:1 on page */
+  --mk-danger-soft: rgba(242, 139, 130, 0.12);
+  --mk-border: rgba(243, 234, 224, 0.1);
+  --mk-border-strong: rgba(243, 234, 224, 0.2);
+  --mk-ring: #e08a2e;
+
+  --mk-glass-bg: rgba(25, 20, 17, 0.82);
+  --mk-glass-solid: #221b16;
+  --mk-glass-blur: var(--mk-blur-nav);
+  --mk-overlay-blur: var(--mk-blur-overlay);
+  --mk-scrim: rgba(0, 0, 0, 0.7);
+  --mk-page-wash: linear-gradient(180deg, #1d1714 0%, #191411 40%, #151009 100%);
+  --mk-band: linear-gradient(90deg, rgba(224, 138, 46, 0.08), rgba(224, 138, 46, 0));
+  --mk-shadow-e1: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --mk-shadow-e2: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --mk-border-w: 1px;
+  --mk-ring-w: 2px;
+}
+
+/* High contrast (light) — no transparency, no gradients, 2px lines */
+[data-theme='hc'] {
+  color-scheme: light;
+  --mk-bg-page: #ffffff;
+  --mk-bg-raised: #ffffff;
+  --mk-bg-sunken: #f2f2f2;
+  --mk-text-primary: #140b04; /* 19.46:1 */
+  --mk-text-secondary: #3b2a1b; /* 13.70:1 */
+  --mk-text-muted: #52422f; /* 9.64:1 */
+  --mk-accent: #6e3200; /* 9.91:1 as text; white on it 9.91:1 */
+  --mk-accent-strong: #6e3200;
+  --mk-accent-soft: #f6e7d9;
+  --mk-accent-contrast: #ffffff;
+  --mk-herb: #2f5206; /* 9.01:1 as text on white */
+  --mk-herb-soft: #e9f0dc;
+  --mk-danger: #8f1414; /* 9.22:1 on white */
+  --mk-danger-soft: #f9e4e4;
+  --mk-border: #545454; /* 7.57:1 on white */
+  --mk-border-strong: #140b04;
+  --mk-ring: #000000;
+
+  --mk-glass-bg: #ffffff; /* solid — glass disabled */
+  --mk-glass-solid: #ffffff;
+  --mk-glass-blur: 0px;
+  --mk-overlay-blur: 0px;
+  --mk-scrim: rgba(20, 11, 4, 0.8);
+  --mk-page-wash: none; /* gradients off */
+  --mk-band: none;
+  --mk-photo-plate: #140b04; /* flat photo plates, no translucency */
+  --mk-photo-scrim: none; /* no gradients */
+  --mk-photo-title-plate: #140b04;
+  --mk-shadow-e1: none;
+  --mk-shadow-e2: none;
+  --mk-border-w: 2px;
+  --mk-ring-w: 3px;
+}
+
+/* Reduced transparency (in-app toggle or OS preference, stamped by the theme
+   engine): every glass surface swaps to its solid fallback, washes/bands off.
+   Declared after the theme blocks so it wins at equal specificity. */
+[data-transparency='reduced'] {
+  --mk-glass-bg: var(--mk-glass-solid);
+  --mk-glass-blur: 0px;
+  --mk-overlay-blur: 0px;
+  --mk-page-wash: none;
+  --mk-band: none;
+}
+
+/* ============================================================
+   TAILWIND v4 THEME MAP — utilities consume Tier 2 tokens only.
+   `inline` keeps utilities pointing at var(--mk-*) so data-theme
+   remapping applies everywhere without variant classes.
+   ============================================================ */
+@theme inline {
+  --color-mk-page: var(--mk-bg-page);
+  --color-mk-raised: var(--mk-bg-raised);
+  --color-mk-sunken: var(--mk-bg-sunken);
+  --color-mk-ink: var(--mk-text-primary);
+  --color-mk-secondary: var(--mk-text-secondary);
+  --color-mk-muted: var(--mk-text-muted);
+  --color-mk-accent: var(--mk-accent);
+  --color-mk-accent-strong: var(--mk-accent-strong);
+  --color-mk-accent-soft: var(--mk-accent-soft);
+  --color-mk-on-accent: var(--mk-accent-contrast);
+  --color-mk-herb: var(--mk-herb);
+  --color-mk-herb-soft: var(--mk-herb-soft);
+  --color-mk-danger: var(--mk-danger);
+  --color-mk-danger-soft: var(--mk-danger-soft);
+  --color-mk-border: var(--mk-border);
+  --color-mk-border-strong: var(--mk-border-strong);
+  --color-mk-ring: var(--mk-ring);
+  --color-mk-photo-ink: var(--mk-photo-ink);
+  --color-mk-photo-plate: var(--mk-photo-plate);
+  --color-mk-photo-title-plate: var(--mk-photo-title-plate);
+
+  --font-display: var(--mk-font-display);
+  --font-mono: var(--mk-font-mono);
+  --font-sans: var(--mk-font-ui);
+
+  --radius-mk-xs: var(--mk-radius-xs);
+  --radius-mk-sm: var(--mk-radius-sm);
+  --radius-mk-md: var(--mk-radius-md);
+  --radius-mk-lg: var(--mk-radius-lg);
+  --radius-mk-xl: var(--mk-radius-xl);
+
+  --shadow-e1: var(--mk-shadow-e1);
+  --shadow-e2: var(--mk-shadow-e2);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
 html {
-  @apply scroll-smooth;
+  scroll-behavior: smooth;
 }
 
 body {
-  @apply bg-culinary-bg text-slate-900 dark:text-slate-100 transition-colors duration-300 antialiased;
   margin: 0;
   min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
+  font-family: var(--mk-font-ui);
+  line-height: 1.6;
+  background-color: var(--mk-bg-page);
+  background-image: var(--mk-page-wash);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  color: var(--mk-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  top: -200px;
-  right: -100px;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(245,158,11,0.08), transparent 70%);
-  border-radius: 50%;
-  z-index: 0;
-  pointer-events: none;
+/* Real, site-wide keyboard focus (replaces the 2 ad-hoc focus rules). */
+:focus-visible {
+  outline: var(--mk-ring-w) solid var(--mk-ring);
+  outline-offset: 2px;
 }
 
-body::after {
-  content: '';
-  position: fixed;
-  bottom: -200px;
-  left: -100px;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(234,88,12,0.06), transparent 70%);
-  border-radius: 50%;
-  z-index: 0;
-  pointer-events: none;
+/* ============================================================
+   GLASS CONTRACT — legal surfaces only: sticky nav + modal chrome.
+   Solid fallbacks: no backdrop-filter support, reduced transparency,
+   and the high-contrast theme all resolve to --mk-glass-solid/0px blur.
+   ============================================================ */
+.mk-glass-nav {
+  background: var(--mk-glass-bg);
+  -webkit-backdrop-filter: blur(var(--mk-glass-blur));
+  backdrop-filter: blur(var(--mk-glass-blur));
 }
 
-.dark body {
-  @apply bg-culinary-dark text-white;
+.mk-scrim {
+  background: var(--mk-scrim);
+  -webkit-backdrop-filter: blur(var(--mk-overlay-blur));
+  backdrop-filter: blur(var(--mk-overlay-blur));
 }
 
-@utility glass {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .mk-glass-nav {
+    background: var(--mk-glass-solid);
+  }
 }
 
-.dark .glass {
-  background: rgba(15, 10, 26, 0.6);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+/* Saffron band behind section heads (self-fades in hc/reduced transparency). */
+.mk-band {
+  background-image: var(--mk-band);
 }
 
-@utility recipe-card {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 2rem;
-  overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-  transition: all 0.5s ease;
-}
-
-.recipe-card:hover {
-  box-shadow: 0 16px 48px rgba(245, 158, 11, 0.1);
-  transform: translateY(-4px);
-}
-
-/* Real reduced-motion support: honour the OS-level preference globally.
-   (The old settings-store `reducedMotion` flag was dead state with no UI
-   toggle and no consumer — removed in favour of this.) */
+/* ============================================================
+   MOTION — wired contract: OS preference (kept from v2) PLUS the
+   in-app data-motion attribute stamped by the theme engine.
+   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -111,4 +270,13 @@ body::after {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+[data-motion='reduced'] *,
+[data-motion='reduced'] *::before,
+[data-motion='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }

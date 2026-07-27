@@ -1,11 +1,17 @@
 <script setup lang="ts">
+/**
+ * "Kitchen Counter" — the V3 dashboard treatment of the data strip.
+ * Every number comes from a real local store (pantry / grocery / recipe);
+ * the expiring tile lists the actual item names (max 3). No invented
+ * metrics: a cookable-now count is not shown because no store tracks one.
+ */
 import { computed, ref } from 'vue'
 import { usePantryStore } from '@/stores/pantryStore'
 import { useGroceryStore } from '@/stores/groceryStore'
 import { useRecipeStore } from '@/stores/recipeStore'
 import { createBackup, parseBackup, serializeBackup } from '@/utils/backup'
 import { triggerDownload } from '@/utils/download'
-import { AlertTriangle, Download, Heart, Refrigerator, ShoppingCart, Upload } from 'lucide-vue-next'
+import { Download, Upload } from 'lucide-vue-next'
 
 const pantry = usePantryStore()
 const grocery = useGroceryStore()
@@ -15,12 +21,12 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const statusMessage = ref<string | null>(null)
 const statusIsError = ref(false)
 
-const stats = computed(() => [
-  { label: 'Pantry items', value: pantry.count, icon: Refrigerator },
-  { label: 'Expiring soon', value: pantry.expiringSoon.length, icon: AlertTriangle },
-  { label: 'Grocery to buy', value: grocery.remainingCount, icon: ShoppingCart },
-  { label: 'Favorites', value: recipes.favorites.length, icon: Heart },
-])
+const expiringNames = computed(() =>
+  pantry.expiringSoon
+    .slice(0, 3)
+    .map((entry) => entry.name)
+    .join(' · ')
+)
 
 const showStatus = (message: string, isError: boolean) => {
   statusMessage.value = message
@@ -65,65 +71,102 @@ const importBackup = async (event: Event) => {
 </script>
 
 <template>
-  <section
-    class="glass rounded-[2rem] px-6 py-4 flex flex-wrap items-center justify-between gap-4"
-    aria-label="Your data at a glance"
-  >
-    <dl class="flex flex-wrap items-center gap-x-8 gap-y-2">
+  <section aria-label="Kitchen counter">
+    <div class="mk-band rounded-mk-xs px-3 py-2 mb-3 flex items-baseline justify-between gap-3 flex-wrap">
+      <h2 class="font-display font-bold text-2xl">
+        Kitchen Counter
+      </h2>
       <div
-        v-for="stat in stats"
-        :key="stat.label"
         class="flex items-center gap-2"
+        role="group"
+        aria-label="Backup and restore"
       >
-        <component
-          :is="stat.icon"
-          :size="16"
-          class="text-culinary-primary"
-          aria-hidden="true"
-        />
-        <dd class="text-lg font-display font-black">
-          {{ stat.value }}
-        </dd>
-        <dt class="text-[10px] font-black uppercase tracking-widest text-slate-400">
-          {{ stat.label }}
+        <!-- Disabled until hydration completes: exporting mid-load would
+             produce a backup missing the user's real data. -->
+        <button
+          :disabled="!pantry.isReady || !grocery.isReady"
+          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-mk-sm text-sm font-semibold bg-mk-raised border border-mk-border text-mk-secondary hover:border-mk-border-strong hover:text-mk-ink disabled:opacity-40 transition-colors"
+          @click="exportBackup"
+        >
+          <Download
+            :size="14"
+            aria-hidden="true"
+          /> Back up
+        </button>
+        <button
+          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-mk-sm text-sm font-semibold bg-mk-raised border border-mk-border text-mk-secondary hover:border-mk-border-strong hover:text-mk-ink transition-colors"
+          @click="openImportPicker"
+        >
+          <Upload
+            :size="14"
+            aria-hidden="true"
+          /> Restore
+        </button>
+        <input
+          ref="fileInput"
+          type="file"
+          accept="application/json,.json"
+          class="hidden"
+          aria-label="Choose a MealScout backup file"
+          @change="importBackup"
+        >
+      </div>
+    </div>
+
+    <dl class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="flex flex-col-reverse bg-mk-raised border border-mk-border rounded-mk-md shadow-e1 px-4 py-3.5">
+        <dt class="text-xs text-mk-muted">
+          pantry items
         </dt>
+        <dd class="font-mono font-medium text-2xl leading-tight tabular-nums">
+          {{ pantry.count }}
+        </dd>
+      </div>
+      <div class="flex flex-col-reverse bg-mk-raised border border-mk-border rounded-mk-md shadow-e1 px-4 py-3.5">
+        <dt class="sr-only">
+          expiring soon
+        </dt>
+        <dd>
+          <span
+            class="block font-mono font-medium text-2xl leading-tight tabular-nums"
+            :class="pantry.expiringSoon.length > 0 ? 'text-mk-danger' : ''"
+          >
+            {{ pantry.expiringSoon.length }}
+          </span>
+          <span
+            class="block text-xs text-mk-muted"
+            aria-hidden="true"
+          >expiring soon</span>
+          <span
+            v-if="expiringNames"
+            class="block mt-1 text-xs text-mk-danger"
+          >
+            {{ expiringNames }}
+          </span>
+        </dd>
+      </div>
+      <div class="flex flex-col-reverse bg-mk-raised border border-mk-border rounded-mk-md shadow-e1 px-4 py-3.5">
+        <dt class="text-xs text-mk-muted">
+          grocery to buy
+        </dt>
+        <dd class="font-mono font-medium text-2xl leading-tight tabular-nums">
+          {{ grocery.remainingCount }}
+        </dd>
+      </div>
+      <div class="flex flex-col-reverse bg-mk-raised border border-mk-border rounded-mk-md shadow-e1 px-4 py-3.5">
+        <dt class="text-xs text-mk-muted">
+          favorites
+        </dt>
+        <dd class="font-mono font-medium text-2xl leading-tight tabular-nums">
+          {{ recipes.favorites.length }}
+        </dd>
       </div>
     </dl>
 
-    <div
-      class="flex items-center gap-2"
-      role="group"
-      aria-label="Backup and restore"
-    >
-      <!-- Disabled until hydration completes: exporting mid-load would
-           produce a backup missing the user's real data. -->
-      <button
-        :disabled="!pantry.isReady || !grocery.isReady"
-        class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary disabled:opacity-40 transition-all"
-        @click="exportBackup"
-      >
-        <Download :size="14" /> Backup
-      </button>
-      <button
-        class="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:border-culinary-primary hover:text-culinary-primary transition-all"
-        @click="openImportPicker"
-      >
-        <Upload :size="14" /> Restore
-      </button>
-      <input
-        ref="fileInput"
-        type="file"
-        accept="application/json,.json"
-        class="hidden"
-        aria-label="Choose a MealScout backup file"
-        @change="importBackup"
-      >
-    </div>
-
     <p
       v-if="statusMessage"
-      class="w-full text-xs font-bold"
-      :class="statusIsError ? 'text-red-500' : 'text-emerald-600 dark:text-emerald-400'"
+      class="mt-3 text-sm font-semibold"
+      :class="statusIsError ? 'text-mk-danger' : 'text-mk-herb'"
       role="status"
     >
       {{ statusMessage }}
