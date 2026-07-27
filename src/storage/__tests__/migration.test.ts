@@ -74,8 +74,7 @@ describe('migrateV1LocalStorage (non-destructive copy)', () => {
     // that lands corrupted.
     const corrupting: AsyncKeyValueStore = {
       kind: 'indexeddb',
-      getItem: async (key) =>
-        wasWritten && !removed.includes(key) ? 'corrupted-write' : null,
+      getItem: async (key) => (wasWritten && !removed.includes(key) ? 'corrupted-write' : null),
       setItem: async () => {
         wasWritten = true
       },
