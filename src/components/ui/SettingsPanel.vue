@@ -58,9 +58,11 @@ watch(
   }
 )
 
+/** Approved V3 theme cut: signature light/dark + high contrast (+ system). */
 const themeModes: { value: ThemeMode; label: string }[] = [
-  { value: 'dark', label: 'Dark' },
   { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'hc', label: 'High contrast' },
   { value: 'system', label: 'System' },
 ]
 
@@ -72,6 +74,18 @@ function close() {
 function onSetTheme(mode: ThemeMode) {
   audio.playClick()
   settingsStore.setTheme(mode)
+}
+
+function onToggleMotion() {
+  audio.playClick()
+  settingsStore.setMotionPref(settingsStore.motionPref === 'reduced' ? 'system' : 'reduced')
+}
+
+function onToggleTransparency() {
+  audio.playClick()
+  settingsStore.setTransparencyPref(
+    settingsStore.transparencyPref === 'reduced' ? 'system' : 'reduced'
+  )
 }
 
 function onToggleSound() {
@@ -92,34 +106,34 @@ function onResetStats() {
   <Teleport to="body">
     <div
       v-if="settingsStore.showHelp"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 mk-scrim"
       @click="close"
     >
       <div
         ref="dialogRef"
-        class="bg-white dark:bg-culinary-dark rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        class="bg-mk-raised border border-mk-border-strong rounded-mk-lg shadow-e2 max-w-md w-full max-h-[90vh] overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-title"
         @click.stop
         @keydown="trapFocus"
       >
-        <div class="p-8">
+        <div class="p-6 sm:p-8">
           <div class="flex justify-between items-center mb-8">
             <h2
               id="settings-title"
-              class="text-2xl font-display font-black dark:text-white"
+              class="text-2xl font-display font-bold"
             >
               Settings
             </h2>
             <button
               ref="closeButtonRef"
-              class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              class="p-2 rounded-mk-sm text-mk-secondary hover:bg-mk-accent-soft hover:text-mk-ink transition-colors"
               aria-label="Close settings"
               @click="close"
             >
               <span
-                class="text-xl dark:text-white"
+                class="text-xl"
                 aria-hidden="true"
               >✕</span>
             </button>
@@ -127,19 +141,24 @@ function onResetStats() {
 
           <div class="space-y-6">
             <div class="space-y-3">
-              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+              <h3 class="text-sm font-semibold text-mk-secondary">
                 Theme
               </h3>
-              <div class="flex gap-2">
+              <div
+                class="grid grid-cols-2 gap-2"
+                role="group"
+                aria-label="Theme"
+              >
                 <button
                   v-for="mode in themeModes"
                   :key="mode.value"
                   :class="
                     settingsStore.theme === mode.value
-                      ? 'bg-culinary-primary text-white'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      ? 'bg-mk-accent-soft text-mk-ink shadow-[inset_0_-2px_0_var(--mk-accent)] border-mk-border-strong'
+                      : 'bg-mk-raised text-mk-secondary border-mk-border hover:border-mk-border-strong hover:text-mk-ink'
                   "
-                  class="flex-1 px-3 py-2 rounded-xl font-medium transition-all"
+                  class="px-3 py-2 rounded-mk-sm border font-medium text-sm transition-colors"
+                  :aria-pressed="settingsStore.theme === mode.value"
                   @click="onSetTheme(mode.value)"
                 >
                   {{ mode.label }}
@@ -148,16 +167,50 @@ function onResetStats() {
             </div>
 
             <div class="space-y-3">
-              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+              <h3 class="text-sm font-semibold text-mk-secondary">
+                Accessibility
+              </h3>
+              <button
+                class="w-full flex items-center justify-between p-4 bg-mk-sunken border border-mk-border rounded-mk-md transition-colors hover:border-mk-border-strong"
+                :aria-pressed="settingsStore.motionPref === 'reduced'"
+                @click="onToggleMotion"
+              >
+                <span class="font-medium text-sm">Reduce motion</span>
+                <span
+                  class="text-sm font-semibold"
+                  :class="settingsStore.motionPref === 'reduced' ? 'text-mk-herb' : 'text-mk-muted'"
+                >
+                  {{ settingsStore.motionPref === 'reduced' ? 'On' : 'Follows system' }}
+                </span>
+              </button>
+              <button
+                class="w-full flex items-center justify-between p-4 bg-mk-sunken border border-mk-border rounded-mk-md transition-colors hover:border-mk-border-strong"
+                :aria-pressed="settingsStore.transparencyPref === 'reduced'"
+                @click="onToggleTransparency"
+              >
+                <span class="font-medium text-sm">Reduce transparency</span>
+                <span
+                  class="text-sm font-semibold"
+                  :class="settingsStore.transparencyPref === 'reduced' ? 'text-mk-herb' : 'text-mk-muted'"
+                >
+                  {{ settingsStore.transparencyPref === 'reduced' ? 'On' : 'Follows system' }}
+                </span>
+              </button>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="text-sm font-semibold text-mk-secondary">
                 Sound Effects
               </h3>
               <button
-                class="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl"
+                class="w-full flex items-center justify-between p-4 bg-mk-sunken border border-mk-border rounded-mk-md transition-colors hover:border-mk-border-strong"
+                :aria-pressed="settingsStore.soundEnabled"
                 @click="onToggleSound"
               >
-                <span class="font-medium dark:text-white">Enable Sound</span>
+                <span class="font-medium text-sm">Enable Sound</span>
                 <span
-                  :class="settingsStore.soundEnabled ? 'text-culinary-accent' : 'text-slate-400'"
+                  class="text-sm font-semibold"
+                  :class="settingsStore.soundEnabled ? 'text-mk-herb' : 'text-mk-muted'"
                 >
                   {{ settingsStore.soundEnabled ? '✓ Enabled' : '✕ Disabled' }}
                 </span>
@@ -165,29 +218,29 @@ function onResetStats() {
             </div>
 
             <div class="space-y-3">
-              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+              <h3 class="text-sm font-semibold text-mk-secondary">
                 Statistics
               </h3>
               <div class="grid grid-cols-2 gap-3">
-                <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-center">
-                  <div class="text-2xl font-black text-culinary-primary">
+                <div class="p-4 bg-mk-sunken border border-mk-border rounded-mk-md text-center">
+                  <div class="text-2xl font-mono font-medium text-mk-accent tabular-nums">
                     {{ statsStore.totalSearches }}
                   </div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400">
+                  <div class="text-xs text-mk-muted">
                     Searches
                   </div>
                 </div>
-                <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-center">
-                  <div class="text-2xl font-black text-culinary-secondary">
+                <div class="p-4 bg-mk-sunken border border-mk-border rounded-mk-md text-center">
+                  <div class="text-2xl font-mono font-medium text-mk-accent tabular-nums">
                     {{ statsStore.totalRecipesViewed }}
                   </div>
-                  <div class="text-xs text-slate-500 dark:text-slate-400">
+                  <div class="text-xs text-mk-muted">
                     Recipes Viewed
                   </div>
                 </div>
               </div>
               <button
-                class="w-full p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors font-medium"
+                class="w-full p-3 text-mk-danger hover:bg-mk-danger-soft rounded-mk-sm transition-colors font-medium text-sm"
                 @click="onResetStats"
               >
                 Reset Statistics
@@ -195,27 +248,27 @@ function onResetStats() {
             </div>
 
             <div class="space-y-3">
-              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+              <h3 class="text-sm font-semibold text-mk-secondary">
                 Keyboard Shortcuts
               </h3>
               <div class="space-y-2">
                 <div
                   v-for="shortcut in KEYBOARD_SHORTCUTS"
                   :key="shortcut.key"
-                  class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl"
+                  class="flex items-center justify-between p-3 bg-mk-sunken border border-mk-border rounded-mk-sm"
                 >
-                  <span class="dark:text-white">{{ shortcut.action }}</span>
+                  <span class="text-sm">{{ shortcut.action }}</span>
                   <kbd
-                    class="px-3 py-1 text-sm font-mono bg-slate-200 dark:bg-slate-700 rounded-lg dark:text-white"
+                    class="px-3 py-1 text-sm font-mono bg-mk-raised border border-mk-border rounded-mk-xs"
                   >{{ shortcut.key }}</kbd>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
-            <p class="text-center text-sm text-slate-500 dark:text-slate-400">
-              MK MealScoutAI v1.0.0 • Built with Vue 3 + Pinia
+          <div class="mt-8 pt-6 border-t border-mk-border">
+            <p class="text-center text-sm text-mk-muted">
+              MK MealScout — built with Vue 3 + Pinia. Data stays in this browser.
             </p>
           </div>
         </div>
