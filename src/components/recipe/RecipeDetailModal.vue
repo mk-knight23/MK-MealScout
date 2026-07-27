@@ -113,18 +113,20 @@ const addUncheckedToGrocery = () => {
     aria-modal="true"
     aria-label="Recipe details"
   >
+    <!-- Modal scrim: sanctioned glass surface (overlay blur tier, solid-ish
+         fallback via tokens under hc / reduced transparency). -->
     <div
-      class="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
+      class="absolute inset-0 mk-scrim"
       aria-hidden="true"
       @click="emit('close')"
     />
 
     <div
-      class="relative glass w-full max-w-5xl rounded-[3rem] overflow-hidden flex flex-col md:flex-row h-full max-h-[85vh]"
+      class="relative bg-mk-raised border border-mk-border-strong w-full max-w-5xl rounded-mk-lg overflow-hidden flex flex-col md:flex-row h-full max-h-[85vh] shadow-e2"
       role="document"
     >
       <button
-        class="absolute top-6 right-6 z-10 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-xl hover:scale-110 transition-transform"
+        class="absolute top-4 right-4 z-10 p-3 bg-mk-raised border border-mk-border rounded-mk-sm shadow-e1 text-mk-secondary hover:text-mk-ink hover:border-mk-border-strong transition-colors"
         aria-label="Close recipe details"
         @click="emit('close')"
       >
@@ -137,9 +139,12 @@ const addUncheckedToGrocery = () => {
         class="flex-1 flex flex-col items-center justify-center py-24"
         role="status"
       >
-        <div class="w-12 h-12 border-4 border-culinary-primary/20 border-t-culinary-primary rounded-full animate-spin" />
-        <p class="mt-4 font-black uppercase tracking-widest text-slate-400 text-xs">
-          Loading recipe...
+        <div
+          class="w-12 h-12 border-4 border-mk-accent-soft border-t-mk-accent rounded-full animate-spin"
+          aria-hidden="true"
+        />
+        <p class="mt-4 text-sm font-semibold text-mk-muted">
+          Loading recipe…
         </p>
       </div>
 
@@ -149,14 +154,14 @@ const addUncheckedToGrocery = () => {
         class="flex-1 flex flex-col items-center justify-center py-24 px-8 text-center"
         role="alert"
       >
-        <p class="font-display font-bold text-2xl text-red-600 dark:text-red-400">
+        <p class="font-display font-bold text-2xl text-mk-danger">
           Something went wrong
         </p>
-        <p class="text-sm text-slate-500 mt-2">
+        <p class="text-sm text-mk-secondary mt-2">
           {{ errorMessage }}
         </p>
         <button
-          class="mt-8 text-culinary-primary font-black uppercase tracking-widest text-xs"
+          class="mt-8 text-mk-accent font-semibold text-sm hover:underline"
           @click="emit('close')"
         >
           Close
@@ -164,38 +169,42 @@ const addUncheckedToGrocery = () => {
       </div>
 
       <template v-else-if="recipe">
-        <!-- Image column -->
+        <!-- Image column: the photo is the background moment, under a solid
+             warm scrim for text (photography does the decorating). -->
         <div class="w-full md:w-5/12 h-64 md:h-auto relative shrink-0">
           <img
             :src="recipe.strMealThumb"
             class="w-full h-full object-cover"
             alt=""
           >
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          <div class="absolute bottom-10 left-10 text-white space-y-2 pr-6">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-[rgba(20,11,4,0.72)] via-transparent to-transparent"
+            aria-hidden="true"
+          />
+          <div class="absolute bottom-8 left-8 text-[#FFF7EC] space-y-2 pr-6">
             <div class="flex flex-wrap gap-2">
-              <span class="px-3 py-1 bg-culinary-primary text-[10px] font-black uppercase rounded-lg">
+              <span class="px-2.5 py-0.5 bg-mk-accent-strong text-mk-on-accent text-xs font-semibold rounded-mk-xs">
                 {{ recipe.strCategory || 'General' }}
               </span>
-              <span class="px-3 py-1 bg-white/20 backdrop-blur-md text-[10px] font-black uppercase rounded-lg border border-white/10">
+              <span class="px-2.5 py-0.5 bg-[rgba(20,11,4,0.65)] text-[#FFF7EC] text-xs font-mono rounded-mk-xs">
                 {{ recipe.strArea || 'Global' }}
               </span>
             </div>
-            <h2 class="text-4xl font-display font-black leading-tight">
+            <h2 class="text-3xl md:text-4xl font-display font-black leading-tight">
               {{ recipe.strMeal }}
             </h2>
           </div>
         </div>
 
         <!-- Content column -->
-        <div class="w-full md:w-7/12 p-8 md:p-12 overflow-y-auto custom-scrollbar space-y-8">
+        <div class="w-full md:w-7/12 p-6 md:p-10 overflow-y-auto space-y-8">
           <!-- Serving scaler -->
-          <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-100 dark:bg-slate-800 rounded-2xl px-5 py-4 border border-slate-200 dark:border-slate-700">
+          <div class="flex flex-wrap items-center justify-between gap-4 bg-mk-sunken rounded-mk-md px-5 py-4 border border-mk-border">
             <div>
-              <p class="text-xs font-black uppercase tracking-widest text-slate-400">
+              <p class="text-sm font-semibold text-mk-ink">
                 Servings
               </p>
-              <p class="text-[11px] text-slate-400 font-medium mt-0.5">
+              <p class="text-xs text-mk-muted font-medium mt-0.5">
                 Approximate — scaled from a {{ BASELINE_SERVINGS }}-serving baseline
               </p>
             </div>
@@ -206,19 +215,19 @@ const addUncheckedToGrocery = () => {
             >
               <button
                 :disabled="servings <= MIN_SERVINGS"
-                class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 disabled:opacity-30 hover:border-culinary-primary transition-colors"
+                class="p-2 rounded-mk-sm bg-mk-raised border border-mk-border disabled:opacity-30 hover:border-mk-border-strong transition-colors"
                 aria-label="Decrease servings"
                 @click="adjustServings(-1)"
               >
                 <Minus :size="16" />
               </button>
               <span
-                class="text-xl font-display font-black w-8 text-center"
+                class="text-xl font-mono font-medium w-8 text-center tabular-nums"
                 aria-live="polite"
               >{{ servings }}</span>
               <button
                 :disabled="servings >= MAX_SERVINGS"
-                class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 disabled:opacity-30 hover:border-culinary-primary transition-colors"
+                class="p-2 rounded-mk-sm bg-mk-raised border border-mk-border disabled:opacity-30 hover:border-mk-border-strong transition-colors"
                 aria-label="Increase servings"
                 @click="adjustServings(1)"
               >
@@ -229,28 +238,26 @@ const addUncheckedToGrocery = () => {
 
           <!-- Ingredients with checkboxes -->
           <div class="space-y-4">
-            <div class="flex items-center justify-between gap-3">
-              <h4 class="text-xs font-black uppercase tracking-widest text-slate-400">
-                Ingredients <span class="normal-case font-bold">(tick what you already have)</span>
-              </h4>
-            </div>
+            <h4 class="font-display font-bold text-lg">
+              Ingredients <span class="font-sans font-medium text-sm text-mk-muted">(tick what you already have)</span>
+            </h4>
             <ul class="space-y-2">
               <li
                 v-for="item in ingredients"
                 :key="item.name"
               >
-                <label class="flex items-center gap-3 text-sm font-bold cursor-pointer group">
+                <label class="flex items-center gap-3 text-[0.9375rem] font-medium cursor-pointer">
                   <input
                     type="checkbox"
                     :checked="!!haveIngredient[item.name]"
-                    class="w-4 h-4 rounded accent-[#b45309]"
+                    class="w-4 h-4 rounded accent-mk-accent"
                     :aria-label="`I already have ${item.name}`"
                     @change="toggleHave(item.name)"
                   >
-                  <span :class="{ 'line-through text-slate-400': haveIngredient[item.name] }">
+                  <span :class="haveIngredient[item.name] ? 'line-through text-mk-muted' : 'text-mk-ink'">
                     <span
                       v-if="item.scaled"
-                      class="text-culinary-primary"
+                      class="text-mk-accent font-semibold"
                     >{{ item.scaled }}</span>
                     {{ item.name }}
                   </span>
@@ -259,10 +266,13 @@ const addUncheckedToGrocery = () => {
             </ul>
             <button
               :disabled="uncheckedCount === 0"
-              class="w-full flex items-center justify-center gap-2 bg-culinary-primary hover:bg-culinary-secondary disabled:opacity-40 disabled:cursor-not-allowed text-white px-6 py-3.5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95"
+              class="w-full flex items-center justify-center gap-2 bg-mk-accent-strong text-mk-on-accent disabled:opacity-40 disabled:cursor-not-allowed px-6 py-3 rounded-mk-sm font-semibold text-sm border border-transparent hover:border-mk-ring transition-colors"
               @click="addUncheckedToGrocery"
             >
-              <ShoppingCart :size="16" />
+              <ShoppingCart
+                :size="16"
+                aria-hidden="true"
+              />
               <span v-if="addedFeedback">Added to grocery list</span>
               <span v-else>Add {{ uncheckedCount }} missing to grocery list</span>
             </button>
@@ -278,43 +288,47 @@ const addUncheckedToGrocery = () => {
               :href="youtubeUrl"
               target="_blank"
               rel="noopener noreferrer"
-              class="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-culinary-primary transition-colors"
+              class="p-4 bg-mk-sunken rounded-mk-md border border-mk-border flex items-center justify-between hover:border-mk-border-strong transition-colors"
             >
-              <span class="text-xs font-black uppercase">Watch tutorial</span>
-              <PlayCircle class="text-culinary-primary group-hover:scale-110 transition-transform" />
+              <span class="text-sm font-semibold">Watch tutorial</span>
+              <PlayCircle
+                class="text-mk-accent"
+                aria-hidden="true"
+              />
             </a>
             <a
               v-if="sourceUrl"
               :href="sourceUrl"
               target="_blank"
               rel="noopener noreferrer"
-              class="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-culinary-primary transition-colors"
+              class="p-4 bg-mk-sunken rounded-mk-md border border-mk-border flex items-center justify-between hover:border-mk-border-strong transition-colors"
             >
-              <span class="text-xs font-black uppercase">Original source</span>
+              <span class="text-sm font-semibold">Original source</span>
               <ExternalLink
                 :size="18"
-                class="text-slate-400 group-hover:text-culinary-primary transition-colors"
+                class="text-mk-secondary"
+                aria-hidden="true"
               />
             </a>
           </div>
 
-          <!-- Instructions -->
-          <div class="space-y-4 pt-6 border-t border-slate-100 dark:border-slate-800">
-            <h4 class="text-xs font-black uppercase tracking-widest text-slate-400">
-              Cooking Instructions
+          <!-- Instructions: long-form reading surface — primary ink, 16px/1.7 -->
+          <div class="space-y-4 pt-6 border-t border-mk-border">
+            <h4 class="font-display font-bold text-lg">
+              Cooking instructions
             </h4>
-            <p class="text-sm leading-relaxed font-medium text-slate-600 dark:text-slate-400 whitespace-pre-line">
+            <p class="text-base leading-7 text-mk-ink whitespace-pre-line">
               {{ recipe.strInstructions }}
             </p>
           </div>
 
           <!-- Disclaimers -->
           <div
-            class="flex gap-3 p-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 font-medium"
+            class="flex gap-3 p-4 bg-mk-accent-soft border border-mk-border rounded-mk-md text-xs leading-relaxed text-mk-secondary font-medium"
           >
             <Info
               :size="16"
-              class="text-amber-500 shrink-0 mt-0.5"
+              class="text-mk-accent shrink-0 mt-0.5"
               aria-hidden="true"
             />
             <p>
