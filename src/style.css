@@ -63,6 +63,14 @@
   --mk-glass-blur: var(--mk-blur-nav);
   --mk-overlay-blur: var(--mk-blur-overlay);
   --mk-scrim: rgba(20, 11, 4, 0.6);
+
+  /* Photo-overlay treatment (photo-relative, not theme-relative: defined once
+     here, flattened only by the HC block per the approved preview's
+     `[data-theme="hc"] .ph-tag/.time-chip { background: #140B04 }` rule). */
+  --mk-photo-ink: #fff7ec; /* 18.31:1 on the solid HC plate */
+  --mk-photo-plate: rgba(20, 11, 4, 0.65);
+  --mk-photo-scrim: linear-gradient(0deg, rgba(20, 11, 4, 0.72), rgba(20, 11, 4, 0) 60%);
+  --mk-photo-title-plate: transparent; /* opaque only in HC */
   --mk-page-wash: linear-gradient(180deg, #fdf9f2 0%, #faf6ef 30%, #f6efe3 100%);
   --mk-band: linear-gradient(90deg, rgba(180, 83, 9, 0.06), rgba(180, 83, 9, 0));
   --mk-shadow-e1: 0 1px 2px rgba(43, 29, 18, 0.06);
@@ -133,6 +141,9 @@
   --mk-scrim: rgba(20, 11, 4, 0.8);
   --mk-page-wash: none; /* gradients off */
   --mk-band: none;
+  --mk-photo-plate: #140b04; /* flat photo plates, no translucency */
+  --mk-photo-scrim: none; /* no gradients */
+  --mk-photo-title-plate: #140b04;
   --mk-shadow-e1: none;
   --mk-shadow-e2: none;
   --mk-border-w: 2px;
@@ -173,6 +184,9 @@
   --color-mk-border: var(--mk-border);
   --color-mk-border-strong: var(--mk-border-strong);
   --color-mk-ring: var(--mk-ring);
+  --color-mk-photo-ink: var(--mk-photo-ink);
+  --color-mk-photo-plate: var(--mk-photo-plate);
+  --color-mk-photo-title-plate: var(--mk-photo-title-plate);
 
   --font-display: var(--mk-font-display);
   --font-mono: var(--mk-font-mono);

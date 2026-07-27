@@ -49,7 +49,7 @@ const open = () => emit('open', props.recipeId)
         :class="
           badgeVariant === 'primary'
             ? 'bg-mk-raised text-mk-herb border border-mk-herb'
-            : 'bg-[rgba(20,11,4,0.65)] text-[#FFF7EC] font-mono'
+            : 'bg-mk-photo-plate text-mk-photo-ink font-mono'
         "
       >
         {{ badge }}

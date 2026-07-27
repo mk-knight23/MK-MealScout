@@ -177,20 +177,22 @@ const addUncheckedToGrocery = () => {
             class="w-full h-full object-cover"
             alt=""
           >
+          <!-- Text-legibility scrim: tokenised so HC resolves it to `none`
+               (no gradients) and plates the title/chips instead. -->
           <div
-            class="absolute inset-0 bg-gradient-to-t from-[rgba(20,11,4,0.72)] via-transparent to-transparent"
+            class="absolute inset-0 bg-[image:var(--mk-photo-scrim)]"
             aria-hidden="true"
           />
-          <div class="absolute bottom-8 left-8 text-[#FFF7EC] space-y-2 pr-6">
+          <div class="absolute bottom-8 left-8 text-mk-photo-ink space-y-2 pr-6">
             <div class="flex flex-wrap gap-2">
               <span class="px-2.5 py-0.5 bg-mk-accent-strong text-mk-on-accent text-xs font-semibold rounded-mk-xs">
                 {{ recipe.strCategory || 'General' }}
               </span>
-              <span class="px-2.5 py-0.5 bg-[rgba(20,11,4,0.65)] text-[#FFF7EC] text-xs font-mono rounded-mk-xs">
+              <span class="px-2.5 py-0.5 bg-mk-photo-plate text-mk-photo-ink text-xs font-mono rounded-mk-xs">
                 {{ recipe.strArea || 'Global' }}
               </span>
             </div>
-            <h2 class="text-3xl md:text-4xl font-display font-black leading-tight">
+            <h2 class="text-3xl md:text-4xl font-display font-black leading-tight bg-mk-photo-title-plate box-decoration-clone rounded-mk-xs px-1 -mx-1">
               {{ recipe.strMeal }}
             </h2>
           </div>
