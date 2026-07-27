@@ -11,7 +11,7 @@ import SettingsPanel from './components/ui/SettingsPanel.vue'
 import DataStrip from './components/ui/DataStrip.vue'
 import PantryManager from './components/pantry/PantryManager.vue'
 import CookMatches from './components/pantry/CookMatches.vue'
-import GroceryView from './components/grocery/GroceryView.vue'
+import GroceryList from './components/grocery/GroceryList.vue'
 import RecipeDetailModal from './components/recipe/RecipeDetailModal.vue'
 import type { Recipe } from './types/recipe'
 import {
@@ -419,7 +419,7 @@ const onSearch = () => {
       <!-- Grocery view -->
       <template v-else>
         <DataStrip />
-        <GroceryView />
+        <GroceryList />
       </template>
     </main>
 
